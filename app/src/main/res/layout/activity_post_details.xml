@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/comment"
+    tools:context=".service.activity.PostDetailsActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/commentsa">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="5dp"
+                android:padding="15dp"
+                android:text="@string/all_comments"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                tools:targetApi="s" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclecomment"
+                android:layout_width="410dp"
+                android:layout_height="612dp" />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <RelativeLayout
+        android:id="@+id/commentsa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/typecommet"
+            android:layout_width="363dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@id/sendcomment"
+            android:background="@color/colorPrimaryDark"
+            android:backgroundTint="@color/teal_700"
+            android:hint="Enter Your Comment..."
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="15dp"
+            android:textColor="@color/colorWhite" />
+
+        <ImageButton
+            android:id="@+id/sendcomment"
+            android:layout_width="44dp"
+            android:layout_height="53dp"
+            android:layout_alignParentRight="true"
+            android:background="@color/colorWhite"
+            android:src="@drawable/send_message" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

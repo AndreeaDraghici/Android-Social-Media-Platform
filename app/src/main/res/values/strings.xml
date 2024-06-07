@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Social Media Platform</string>
+    <string name="use_a_local_account_to_log_in">USE A LOCAL ACCOUNT TO LOG-IN!</string>
+    <string name="add_your_email">ADD YOUR EMAIL…</string>
+    <string name="add_your_password">ADD YOUR PASSWORD…</string>
+    <string name="forgot_your_password">FORGOT YOUR PASSWORD?</string>
+    <string name="email">EMAIL</string>
+    <string name="log_in">LOG-IN</string>
+    <string name="register_as_a_new_user">REGISTER AS A NEW USER</string>
+    <string name="password">PASSWORD</string>
+    <string name="create_account">CREATE ACCOUNT</string>
+    <string name="your_name">ADD YOUR NAME…</string>
+    <string name="already_have_a_account_sign_in">ALREADY HAVE A ACCOUNT? SIGN-IN</string>
+    <string name="sign_up_here">SIGN-UP HERE</string>
+    <string name="home">Home</string>
+    <string name="add_posts">Add Posts</string>
+    <string name="profile">Profile</string>
+    <string name="upload">Upload</string>
+    <string name="enter_description">Enter Description</string>
+    <string name="enter_title">Enter Title</string>
+    <string name="todo">TODO</string>
+    <string name="comment">COMMENT</string>
+    <string name="browse">Browse</string>
+    <string name="old_password">Old Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="take_picture">Take User Picture</string>
+    <string name="all_comments">COMMENTS</string>
+    <string name="all_posts">NEW POSTS</string>
+    <string name="add_photo">ADD PHOTO</string>
+    <string name="person_name"> User Name</string>
+    <string name="person_email">User Email Address</string>
+</resources>

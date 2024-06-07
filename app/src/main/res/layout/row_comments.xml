@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="1dp"
+    android:orientation="vertical"
+    app:cardBackgroundColor="@color/colorGray"
+    app:contentPadding="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/commentname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Andreea"
+            android:padding="3dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/commenttime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commenttext"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="12/06/19" />
+
+        <TextView
+            android:id="@+id/commenttext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commentname"
+            android:text="Actual Comment"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:padding="3dp"
+            android:textColor="@color/colorBlack" />
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

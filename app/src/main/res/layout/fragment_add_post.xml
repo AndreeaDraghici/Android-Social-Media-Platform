@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/blog"
+    tools:context=".service.post.fragment.AddPostFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/ptitle"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit"
+            android:hint="@string/enter_title"
+            android:minHeight="80dp"
+            android:padding="10dp"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:autofillHints="" />
+
+        <ImageView
+            android:id="@+id/imagep"
+            android:layout_width="match_parent"
+            android:layout_height="239dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/white"
+            android:src="@drawable/ic_image" />
+
+        <EditText
+            android:id="@+id/pdes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit"
+            android:gravity="start"
+            android:hint="@string/enter_description"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="120dp"
+            android:padding="10dp"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:autofillHints="" />
+
+
+        <Button
+            android:id="@+id/upload"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45sp"
+            android:text="@string/upload"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+</ScrollView>
