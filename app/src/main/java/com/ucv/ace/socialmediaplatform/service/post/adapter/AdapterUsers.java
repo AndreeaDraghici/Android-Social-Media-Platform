@@ -18,12 +18,24 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * The {@code AdapterUsers} is a RecyclerView Adapter that binds user data
+ * to a list item layout for display in a RecyclerView.
+ * It handles user images, names, and emails, allowing for easy visualization
+ * of a list of users within the social media platform.
+ */
 public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
 
     Context context;
     FirebaseAuth firebaseAuth;
     String uid;
 
+    /**
+     * Constructs a new AdapterUsers instance.
+     *
+     * @param context The context in which the adapter is operating.
+     * @param list    A list of ModelUsers representing the users to display.
+     */
     public AdapterUsers(Context context, List<ModelUsers> list) {
         this.context = context;
         this.list = list;
@@ -40,6 +52,12 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
         return new MyHolder(view);
     }
 
+    /**
+     * Binds the user data to the views in the specified position of the RecyclerView.
+     *
+     * @param holder   The ViewHolder that will hold the views.
+     * @param position The position of the item in the data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
         final String hisuid = list.get(position).getUid();
@@ -54,16 +72,29 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
         }
     }
 
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     *
+     * @return The number of items in the list.
+     */
     @Override
     public int getItemCount() {
         return list.size();
     }
 
+    /**
+     * ViewHolder class to hold the views for each user item.
+     */
     class MyHolder extends RecyclerView.ViewHolder {
 
         CircleImageView profiletv;
         TextView name, email;
 
+        /**
+         * Constructs a new MyHolder instance and initializes the views.
+         *
+         * @param itemView The view for this holder.
+         */
         public MyHolder(@NonNull View itemView) {
             super(itemView);
             profiletv = itemView.findViewById(R.id.imagep);

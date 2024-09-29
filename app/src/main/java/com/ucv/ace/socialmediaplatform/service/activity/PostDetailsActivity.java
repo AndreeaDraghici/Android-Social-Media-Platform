@@ -13,11 +13,13 @@ import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,21 +37,41 @@ import java.util.List;
 import java.util.Objects;
 
 /***
- * We are going to comment on the post.
- * Here we are going to write a comment, and then we will be showing the comments and will be updating the comment count.
+ * This activity handles displaying post details, loading comments, and posting new comments.
+ * It also manages notifications when a new comment is added and updates the comment count for the post.
  */
 
 public class PostDetailsActivity extends AppCompatActivity {
-
+    /**
+     * Channel ID for notifications.
+     */
     public static final String CHANNEL = "MYCHANNEL";
 
+    /**
+     * User and post data.
+     */
     String myuid, myname, myemail, mydp, postId;
+    /**
+     * UI components for commenting and viewing comments.
+     */
     EditText comment;
     ImageButton sendButton;
     RecyclerView recyclerView;
+
+    /**
+     * List to hold comments and the adapter for displaying them.
+     */
     List<ModelComment> commentList;
     AdapterComment adapterComment;
+
+    /**
+     * Action bar for navigation and post details display.
+     */
     ActionBar actionBar;
+
+    /**
+     * Progress dialog to show during comment uploading.
+     */
     ProgressDialog progressDialog;
 
     /**
@@ -67,6 +89,8 @@ public class PostDetailsActivity extends AppCompatActivity {
         actionBar.setTitle("Post Details");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
+
+        // Get post ID and user information
         postId = getIntent().getStringExtra("pid");
         recyclerView = findViewById(R.id.recyclecomment);
         myemail = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
@@ -76,11 +100,18 @@ public class PostDetailsActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         actionBar.setSubtitle(String.format("SignedIn as: %s", myemail));
+
+        // Load and display comments
         loadComment();
+
+        // Set button action to upload comment
         sendButton.setOnClickListener(v -> uploadComment());
 
     }
 
+    /**
+     * Loads comments from Firebase and displays them in a RecyclerView.
+     */
     private void loadComment() {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -108,7 +139,8 @@ public class PostDetailsActivity extends AppCompatActivity {
 
 
     /**
-     * Upload the value of comment data into firebase.
+     * Uploads a comment to the Firebase database.
+     * Displays a progress dialog and updates the comment count after success.
      */
     private void uploadComment() {
 
@@ -123,6 +155,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         String timestamp = String.valueOf(System.currentTimeMillis());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts").child(postId).child("Comments");
 
+        // Create a HashMap for comment data
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("cId", timestamp);
         hashMap.put("comment", comment);
@@ -132,6 +165,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         hashMap.put("udp", mydp);
         hashMap.put("uname", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
 
+        // Add comment to the database
         databaseReference.child(timestamp).setValue(hashMap).addOnSuccessListener(aVoid -> {
             progressDialog.dismiss();
             Toast.makeText(PostDetailsActivity.this, "Added Comment !", Toast.LENGTH_LONG).show();
@@ -147,10 +181,10 @@ public class PostDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Display Notification.
+     * Displays a notification when a new comment is added.
      *
-     * @param email - user email.
-     * @param title - title of post.
+     * @param email - The email of the user who added the comment.
+     * @param title - The title or content of the comment.
      */
     public void showNotification(String email, String title) {
         /** Sets up the pending intent to update the notification.**/
@@ -193,6 +227,10 @@ public class PostDetailsActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Updates the comment count for the post in the Firebase database.
+     */
     boolean count = false;
 
     private void updateCommentCount() {

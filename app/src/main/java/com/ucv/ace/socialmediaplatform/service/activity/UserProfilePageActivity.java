@@ -19,11 +19,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -45,7 +47,10 @@ import java.util.Objects;
 
 
 /**
- * We are going to edit our profile data like changing name, changing the password of the user, and changing profile pic.
+ * This activity allows the user to manage their profile, such as updating the name,
+ * changing the password, and uploading/changing the profile picture.
+ * It handles retrieving and displaying the user information from Firebase and
+ * updating the Firebase database with changes.
  */
 
 @SuppressWarnings("deprecation")
@@ -64,20 +69,35 @@ public class UserProfilePageActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE = 1;
     private static final int CAMERA_REQUEST_CODE = 2;
 
+    /**
+     * Called when the activity is created. Initializes Firebase instances,
+     * sets up the profile data, and handles profile picture changes and name/password updates.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data it most recently supplied. Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile_page);
+
+        // Initialize UI components
         editName = findViewById(R.id.editname);
         settingProfileImage = findViewById(R.id.setting_profile_image);
         progressDialog = new ProgressDialog(this);
         progressDialog.setCanceledOnTouchOutside(false);
         editPassword = findViewById(R.id.changepassword);
+
+        // Initialize Firebase instances
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         databaseReference = firebaseDatabase.getReference("Users");
+
+        /**
+         * Loads the user's profile image from the Firebase database.
+         */
         Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -99,6 +119,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
             }
         });
 
+        // Set up listeners for editing profile name and password
         editPassword.setOnClickListener(v -> {
             progressDialog.setMessage("Changing Password");
             showPasswordChangeDialog();
@@ -122,6 +143,15 @@ public class UserProfilePageActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * Called when the user responds to a permission request. If the camera permission is granted,
+     * the camera app is opened.
+     *
+     * @param requestCode  The request code passed in the requestPermissions() call.
+     * @param permissions  The requested permissions.
+     * @param grantResults The results for the requested permissions.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -137,6 +167,13 @@ public class UserProfilePageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the result from the camera activity. Sets the profile image to the picture taken by the user.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller (various data can be attached to the intent "extras").
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -209,6 +246,10 @@ public class UserProfilePageActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Shows a dialog for changing the password. Prompts the user for their current password
+     * and new password, then updates the password in Firebase.
+     */
     private void showPasswordChangeDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_update_password, null);
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) final EditText oldPassword = view.findViewById(R.id.oldpasslog);
@@ -235,6 +276,13 @@ public class UserProfilePageActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the user's password in Firebase.
+     *
+     * @param oldP The user's current password.
+     * @param newP The new password to set.
+     */
+
     private void updatePassword(String oldP, final String newP) {
         progressDialog.show();
         final FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -254,9 +302,10 @@ public class UserProfilePageActivity extends AppCompatActivity {
     }
 
     /**
-     * Updating name
+     * Shows a dialog for updating the user's name. After entering the new name,
+     * it is updated in the Firebase database.
      *
-     * @param key
+     * @param key The database key to update (in this case, the "name" field).
      */
     private void showNameUpdate(final String key) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -276,7 +325,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(value)) {
                 progressDialog.show();
 
-                // Here we are updating the new name
+                // Update the name in Firebase
                 HashMap<String, Object> result = new HashMap<>();
                 result.put(key, value);
                 databaseReference.child(firebaseUser.getUid()).updateChildren(result).addOnSuccessListener(aVoid -> {
@@ -287,6 +336,8 @@ public class UserProfilePageActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     Toast.makeText(UserProfilePageActivity.this, "Unable to update", Toast.LENGTH_LONG).show();
                 });
+
+                // Update the name in user's posts
                 if (key.equals("name")) {
                     final DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference("Posts");
                     Query query = dbReference.orderByChild("uid").equalTo(userId);
