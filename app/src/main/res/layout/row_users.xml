@@ -23,9 +23,9 @@
             android:src="@drawable/profile" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -33,7 +33,7 @@
                 android:id="@+id/namep"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/person_name"
+                android:text="Person NAme"
                 android:textColor="@color/colorBlack"
                 android:textSize="18sp" />
 
@@ -41,7 +41,7 @@
                 android:id="@+id/emailp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/person_email"
+                android:text="Person Email"
                 android:textColor="@color/colorBlack" />
 
         </LinearLayout>

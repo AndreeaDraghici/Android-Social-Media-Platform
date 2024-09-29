@@ -75,7 +75,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.sendcomment);
         progressDialog = new ProgressDialog(this);
 
-        actionBar.setSubtitle("SignedIn as: " + myemail);
+        actionBar.setSubtitle(String.format("SignedIn as: %s", myemail));
         loadComment();
         sendButton.setOnClickListener(v -> uploadComment());
 
