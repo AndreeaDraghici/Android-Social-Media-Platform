@@ -4,145 +4,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/background_nature"
     tools:context=".service.authentication.LoginActivity">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
+        <!-- Blurred Container -->
+        <FrameLayout
+            android:id="@+id/blur_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:background="@android:color/transparent"
+            android:padding="20dp">
 
-            <TextView
-                android:id="@+id/welcom"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="23dp"
-                android:background="@color/colorWhite"
-                android:gravity="center"
-                android:text="@string/use_a_local_account_to_log_in"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:background="@android:color/white"
+                android:padding="16dp">
 
-            <TextView
-                android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/welcom"
-                android:layout_marginStart="35dp"
-                android:layout_marginTop="73dp"
-                android:text="@string/email"
-                android:textColor="@color/purple_700"
-                android:textStyle="bold" />
+                <!-- Welcome TextView -->
+                <TextView
+                    android:id="@+id/welcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/use_a_local_account_to_log_in"
+                    android:textColor="@color/neutral"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/login_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/email"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="30dp"
-                android:autofillHints=""
-                android:background="@color/btnedit"
-                android:hint="@string/add_your_email"
-                android:inputType="textEmailAddress"
-                android:minHeight="48dp"
-                android:padding="8dp"
-                android:textColorHint="@color/black" />
+                <!-- Email TextView -->
+                <TextView
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/welcome"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/email"
+                    android:textColor="@color/neutral"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/login_email"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/password"
-                android:textColor="@color/purple_700"
-                android:textStyle="bold" />
+                <!-- Email EditText -->
+                <EditText
+                    android:id="@+id/login_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/email"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/edittext_background"
+                    android:drawableStart="@drawable/ic_email"
+                    android:hint="@string/add_your_email"
+                    android:inputType="textEmailAddress"
+                    android:padding="12dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@color/neutral" />
 
-            <EditText
-                android:id="@+id/login_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/password"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="30dp"
-                android:autofillHints=""
-                android:background="@color/btnedit"
-                android:hint="@string/add_your_password"
-                android:importantForAutofill="no"
-                android:inputType="textPassword"
-                android:minHeight="48dp"
-                android:padding="8dp"
-                android:textColorHint="@color/black" />
+                <!-- Password TextView -->
+                <TextView
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/login_email"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/password"
+                    android:textColor="@color/neutral"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/forget_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/login_password"
-                android:layout_marginStart="210dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="23dp"
-                android:text="@string/forgot_your_password"
-                android:textAlignment="center"
-                android:textColor="@color/purple_700"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                <!-- Password EditText -->
+                <EditText
+                    android:id="@+id/login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/password"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/edittext_background"
+                    android:drawableStart="@drawable/ic_password"
+                    android:hint="@string/add_your_password"
+                    android:inputType="textPassword"
+                    android:padding="12dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@color/neutral" />
 
-            <Button
-                android:id="@+id/login_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/forget_password"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="35dp"
-                android:layout_marginRight="30dp"
-                android:background="@drawable/common_google_signin_btn_icon_light"
-                android:padding="4dp"
-                android:text="@string/log_in"
-                android:textAllCaps="false"
-                android:textColor="@android:color/background_light"
-                android:textSize="24sp" />
+                <!-- Login Button -->
+                <Button
+                    android:id="@+id/login_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/forgot_password"
+                    android:layout_marginTop="24dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:text="@string/log_in"
+                    android:textColor="@android:color/white" />
 
-            <TextView
-                android:id="@+id/needs_new_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/login_button"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginEnd="23dp"
-                android:background="@color/colorWhite"
-                android:text="@string/register_as_a_new_user"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
+                <!-- Forgot Password TextView -->
+                <TextView
+                    android:id="@+id/forgot_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/login_password"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/forgot_your_password"
+                    android:textAlignment="center"
+                    android:textColor="@color/neutral"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
+                <!-- Register New Account TextView -->
+                <TextView
+                    android:id="@+id/needs_new_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/login_button"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/register_as_a_new_user"
+                    android:textAlignment="center"
+                    android:textColor="@color/neutral"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+        </FrameLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
