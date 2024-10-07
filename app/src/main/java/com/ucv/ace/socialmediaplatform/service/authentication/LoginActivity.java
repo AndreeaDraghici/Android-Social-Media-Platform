@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Patterns;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,9 +42,13 @@ public class LoginActivity extends AppCompatActivity {
     private Button mlogin;
     private TextView newAccount, recoverPassword;
     FirebaseUser currentUser;
-
+    private CheckBox rememberPasswordCheckBox;
     private ProgressDialog loadingBar;
     private FirebaseAuth mAuth;
+
+    // Constant for SharedPreferences
+    private static final String PREFS_NAME = "LoginPrefs";
+
 
     /**
      * Called when the activity is first created. Initializes the UI components
@@ -55,38 +61,46 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
 
-        // Setting up the ActionBar
-        ActionBar actionBar = getSupportActionBar();
-        Objects.requireNonNull(actionBar).setTitle("Login into account");
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        /* initialising the layout items */
+        // Initialize layout components
         email = findViewById(R.id.login_email);
         password = findViewById(R.id.login_password);
+        mlogin = findViewById(R.id.login_button);
         newAccount = findViewById(R.id.needs_new_account);
         recoverPassword = findViewById(R.id.forgot_password);
-        mAuth = FirebaseAuth.getInstance();
-        mlogin = findViewById(R.id.login_button);
-        loadingBar = new ProgressDialog(this);
+        rememberPasswordCheckBox = findViewById(R.id.remember_password);  // Initialize CheckBox
 
-        // Firebase authentication setup
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        loadingBar = new ProgressDialog(this);
 
-        // Set up click listener for login button
-        mlogin.setOnClickListener(v -> {
-            getUserCredentials();
-        });
+        // Check for saved login credentials
+        checkSavedCredentials();
 
-        // Redirect to RegisterActivity when "Create new account" is clicked
+        // Set listener for login button
+        mlogin.setOnClickListener(v -> getUserCredentials());
+
+        // Redirect to RegisterActivity
         newAccount.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
 
-        // Show the password recovery dialog when "Forgot Password" is clicked
+        // Password recovery
         recoverPassword.setOnClickListener(v -> showRecoverPasswordDialog());
+    }
+
+    // Check for saved credentials and pre-populate fields
+    private void checkSavedCredentials() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean rememberMe = sharedPreferences.getBoolean("rememberMe", false);
+
+        if (rememberMe) {
+            String savedEmail = sharedPreferences.getString("email", "");
+            String savedPassword = sharedPreferences.getString("password", "");
+
+            email.setText(savedEmail);
+            password.setText(savedPassword);
+            rememberPasswordCheckBox.setChecked(true);  // Set CheckBox to checked
+        }
     }
 
     /**
@@ -101,11 +115,35 @@ public class LoginActivity extends AppCompatActivity {
         if (!Patterns.EMAIL_ADDRESS.matcher(mail).matches()) {
             email.setError("Invalid Email Address!");
             email.setFocusable(true);
-
         } else {
-            // If email is valid, proceed with login
+            // If "Remember Password" is checked, save credentials
+            if (rememberPasswordCheckBox.isChecked()) {
+                saveCredentials(mail, pass);
+            } else {
+                clearSavedCredentials();
+            }
+
+            // Proceed with login
             loginUser(mail, pass);
         }
+    }
+
+    // Save login credentials in SharedPreferences
+    private void saveCredentials(String mail, String pass) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("email", mail);
+        editor.putString("password", pass);
+        editor.putBoolean("rememberMe", true);
+        editor.apply();
+    }
+
+    // Clear saved login credentials if "Remember Password" is unchecked
+    private void clearSavedCredentials() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();  // Clear all saved data
+        editor.apply();
     }
 
     /**
