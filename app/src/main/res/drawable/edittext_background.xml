@@ -9,7 +9,6 @@
             <stroke android:width="2dp" android:color="@color/colorPrimary" />
             <corners android:radius="16dp" />
             <padding android:left="12dp" android:right="12dp" />
-            <!-- Note: Shadow effects are not supported in shape drawable -->
         </shape>
     </item>
     <!-- Default State -->

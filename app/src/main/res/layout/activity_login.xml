@@ -22,13 +22,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="20dp"
-            android:background="@android:color/transparent"
+            android:background="@drawable/edittext_background"
             android:padding="20dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
+                android:background="@drawable/edittext_background"
                 android:padding="16dp">
 
                 <!-- Welcome TextView -->
@@ -94,16 +94,31 @@
                     android:textColor="@android:color/black"
                     android:textColorHint="@color/neutral" />
 
+
                 <!-- Login Button -->
                 <Button
                     android:id="@+id/login_button"
-                    android:layout_width="match_parent"
+                    android:layout_width="304dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/forgot_password"
-                    android:layout_marginTop="24dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="-87dp"
                     android:backgroundTint="@color/colorAccent"
                     android:text="@string/log_in"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="16dp" />
+
+                <!-- Remember Password CheckBox -->
+                <CheckBox
+                    android:id="@+id/remember_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/login_password"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/remember_password"
+                    android:textColor="@color/neutral"
+                    android:textColorHighlight="#171717"
+                    android:textColorLink="#0E0E0E" />
 
                 <!-- Forgot Password TextView -->
                 <TextView
@@ -111,25 +126,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/login_password"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="127dp"
                     android:text="@string/forgot_your_password"
                     android:textAlignment="center"
-                    android:textColor="@color/neutral"
+                    android:textColor="@color/colorAccent"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <!-- Register New Account TextView -->
-                <TextView
-                    android:id="@+id/needs_new_account"
+                <!-- Divider Line -->
+                <View
+                    android:id="@+id/divider_line"
                     android:layout_width="match_parent"
+                    android:layout_height="1.5dp"
+                    android:layout_below="@id/forgot_password"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/colorgray01" />
+
+                <!-- Register New Account TextView -->
+                <Button
+                    android:id="@+id/needs_new_account"
+                    android:layout_width="291dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/login_button"
-                    android:layout_marginTop="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="70dp"
+                    android:backgroundTint="@android:color/holo_green_dark"
                     android:text="@string/register_as_a_new_user"
                     android:textAlignment="center"
-                    android:textColor="@color/neutral"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    app:cornerRadius="16dp" />
 
             </RelativeLayout>
         </FrameLayout>
