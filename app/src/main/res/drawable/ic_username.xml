@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/black"
+    android:alpha="0.6">
+
+    <!-- Group for positioning -->
+    <group>
+
+        <!-- Circle for the head of the user icon -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M9.5,6C11.1569,6 12.5,7.34315 12.5,9C12.5,10.6569 11.1569,12 9.5,12C7.84315,12 6.5,10.6569 6.5,9C6.5,7.34315 7.84315,6 9.5,6Z" />
+
+        <!-- Body shape for the user icon -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M9.5,13C7,13 5,15 5,17.5L5,18C5,18.5523 5.44772,19 6,19L13,19C13.5523,19 14,18.5523 14,18L14,17.5C14,15 12,13 9.5,13Z" />
+
+    </group>
+</vector>

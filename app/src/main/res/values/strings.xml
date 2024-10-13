@@ -1,17 +1,18 @@
 <resources>
     <string name="app_name">Social Media Platform</string>
     <string name="use_a_local_account_to_log_in">LOGIN</string>
-    <string name="add_your_email">Your Email Here</string>
-    <string name="add_your_password">Your Password Here</string>
+    <string name="add_your_email"> Your Email Here</string>
+    <string name="add_your_password"> Your Password Here</string>
     <string name="forgot_your_password">Forgotten password?</string>
     <string name="email">EMAIL</string>
     <string name="log_in">LOG-IN</string>
     <string name="register_as_a_new_user">Create new account</string>
     <string name="password">PASSWORD</string>
     <string name="create_account">CREATE ACCOUNT</string>
-    <string name="your_name">ADD YOUR NAME…</string>
+    <string name="your_name"> Your Name Here</string>
+    <string name="name">NAME</string>
     <string name="already_have_a_account_sign_in">ALREADY HAVE A ACCOUNT? SIGN-IN</string>
-    <string name="sign_up_here">SIGN-UP HERE</string>
+    <string name="sign_up_here">SIGN-UP</string>
     <string name="home">Home</string>
     <string name="add_posts">Add Posts</string>
     <string name="profile">Profile</string>
@@ -30,4 +31,5 @@
     <string name="person_name"> User Name</string>
     <string name="person_email">User Email Address</string>
     <string name="remember_password">Remember me?</string>
+    <string name="login_with_google">LOGIN WITH GOOGLE</string>
 </resources>
