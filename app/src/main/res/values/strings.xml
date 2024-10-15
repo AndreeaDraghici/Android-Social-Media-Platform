@@ -32,4 +32,7 @@
     <string name="person_email">User Email Address</string>
     <string name="remember_password">Remember me?</string>
     <string name="login_with_google">LOGIN WITH GOOGLE</string>
+    <string name="welcome">WELCOME!</string>
+
+
 </resources>

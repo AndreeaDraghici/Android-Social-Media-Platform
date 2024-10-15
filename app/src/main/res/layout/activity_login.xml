@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -94,20 +93,6 @@
                     android:textColor="@android:color/black"
                     android:textColorHint="@color/neutral" />
 
-
-                <!-- Login Button -->
-                <Button
-                    android:id="@+id/login_button"
-                    android:layout_width="304dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/forgot_password"
-                    android:layout_centerInParent="true"
-                    android:layout_marginTop="-87dp"
-                    android:backgroundTint="@color/colorAccent"
-                    android:text="@string/log_in"
-                    android:textColor="@android:color/white"
-                    app:cornerRadius="16dp" />
-
                 <!-- Remember Password CheckBox -->
                 <CheckBox
                     android:id="@+id/remember_password"
@@ -125,7 +110,7 @@
                     android:id="@+id/forgot_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/login_password"
+                    android:layout_below="@id/login_password"
                     android:layout_marginTop="127dp"
                     android:text="@string/forgot_your_password"
                     android:textAlignment="center"
@@ -133,28 +118,56 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
+                <!-- Login Button -->
+                <Button
+                    android:id="@+id/login_button"
+                    android:layout_width="223dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/forgot_password"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="-87dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:text="@string/log_in"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="16dp" />
+
                 <!-- Divider Line -->
+
+                <!-- Login with Google Button -->
                 <View
                     android:id="@+id/divider_line"
                     android:layout_width="match_parent"
                     android:layout_height="1.5dp"
                     android:layout_below="@id/forgot_password"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="16dp"
                     android:background="@color/colorgray01" />
+
+                <Button
+                    android:id="@+id/google_login_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="51dp"
+                    android:layout_below="@id/divider_line"
+                    android:layout_centerInParent="true"
+                    android:backgroundTint="@color/btnRed"
+                    android:drawableLeft="@drawable/ic_gmail_logo"
+                    android:drawablePadding="8dp"
+                    android:text="@string/login_with_google"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="16dp" />
+
 
                 <!-- Register New Account TextView -->
                 <Button
                     android:id="@+id/needs_new_account"
-                    android:layout_width="291dp"
+                    android:layout_width="221dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/login_button"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="70dp"
+                    android:layout_below="@+id/google_login_button"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="17dp"
                     android:backgroundTint="@android:color/holo_green_dark"
                     android:text="@string/register_as_a_new_user"
                     android:textAlignment="center"
-                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:cornerRadius="16dp" />
 

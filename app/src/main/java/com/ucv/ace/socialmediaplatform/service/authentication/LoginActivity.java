@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,11 +16,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ucv.ace.socialmediaplatform.R;
@@ -29,11 +39,11 @@ import java.util.HashMap;
 import java.util.Objects;
 
 /**
- * This activity handles user login functionality. Users can log in with their email
- * and password, create a new account, or recover their password if they forget it.
- * It interacts with Firebase for authentication and database operations.
+ * The LoginActivity class handles user login functionality, including
+ * sign-in with email and password, Google Sign-In, and password recovery.
+ * This activity interacts with Firebase for authentication and database
+ * operations.
  */
-
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
     private EditText email;
@@ -46,22 +56,34 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog loadingBar;
     private FirebaseAuth mAuth;
 
+    // Google Sign-In
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleSignInClient mGoogleSignInClient;
+    private Button googleLoginButton;
+
     // Constant for SharedPreferences
     private static final String PREFS_NAME = "LoginPrefs";
 
 
     /**
-     * Called when the activity is first created. Initializes the UI components
-     * and sets up Firebase authentication.
+     * Called when the activity is first created. This method initializes
+     * the UI components, Firebase authentication, and Google Sign-In client.
+     * It also checks for saved credentials and sets up button listeners.
      *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *                           being previously shut down, this Bundle contains the data it most recently supplied.
+     * @param savedInstanceState If the activity is being re-initialized
+     *                           after being shut down, this Bundle contains
+     *                           the data it most recently supplied.
      */
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        // Setting up the ActionBar
+        ActionBar actionBar = getSupportActionBar();
+
+        Objects.requireNonNull(actionBar).setTitle("Login With Your Account");
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Initialize layout components
         email = findViewById(R.id.login_email);
@@ -70,10 +92,19 @@ public class LoginActivity extends AppCompatActivity {
         newAccount = findViewById(R.id.needs_new_account);
         recoverPassword = findViewById(R.id.forgot_password);
         rememberPasswordCheckBox = findViewById(R.id.remember_password);  // Initialize CheckBox
+        googleLoginButton = findViewById(R.id.google_login_button);
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         loadingBar = new ProgressDialog(this);
+
+        // Google Sign-In configuration
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // Check for saved login credentials
         checkSavedCredentials();
@@ -86,9 +117,91 @@ public class LoginActivity extends AppCompatActivity {
 
         // Password recovery
         recoverPassword.setOnClickListener(v -> showRecoverPasswordDialog());
+
+        // Set listener for Google login button
+        googleLoginButton.setOnClickListener(v -> signInWithGoogle());
     }
 
-    // Check for saved credentials and pre-populate fields
+    /**
+     * Initiates the Google Sign-In process.
+     */
+    private void signInWithGoogle() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    /**
+     * Handles the result of the Google Sign-In intent. If the sign-in
+     * is successful, it proceeds with Firebase authentication.
+     *
+     * @param requestCode The request code passed to startActivityForResult().
+     * @param resultCode  The result code returned by the child activity.
+     * @param data        An Intent, which can return result data to the caller.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign-In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account.getIdToken());
+            } catch (ApiException e) {
+                // Google Sign-In failed
+                Log.w("LoginActivity", "Google sign in failed", e);
+                Toast.makeText(this, "Google sign in failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * Authenticate the user with Firebase using the Google Sign-In token.
+     *
+     * @param idToken The ID token returned from Google Sign-In.
+     */
+    private void firebaseAuthWithGoogle(String idToken) {
+        loadingBar.setMessage("Logging In with Google Account...");
+        loadingBar.show();
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                loadingBar.dismiss();
+                FirebaseUser user = mAuth.getCurrentUser();
+
+                if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                    // Store user information in Firebase
+                    String email = user.getEmail();
+                    String uid = user.getUid();
+                    HashMap<String, String> userData = new HashMap<>();
+                    userData.put("email", email);
+                    userData.put("uid", uid);
+                    userData.put("name", "");
+                    userData.put("phone", "");
+                    userData.put("image", "");
+                    userData.put("cover", "");
+
+                    // Save data in Firebase database
+                    FirebaseDatabase.getInstance().getReference("Users").child(uid).setValue(userData);
+                }
+
+                Toast.makeText(LoginActivity.this, "Google sign-in success!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                finish();
+            } else {
+                loadingBar.dismiss();
+                Toast.makeText(LoginActivity.this, "Firebase Authentication failed.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    /**
+     * Checks for saved login credentials in SharedPreferences and
+     * pre-populates the email and password fields if credentials exist.
+     */
     private void checkSavedCredentials() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean rememberMe = sharedPreferences.getBoolean("rememberMe", false);
@@ -128,7 +241,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Save login credentials in SharedPreferences
+    /**
+     * Saves the login credentials (email and password) in SharedPreferences
+     * if the user has selected the "Remember Password" option.
+     *
+     * @param mail The user's email address.
+     * @param pass The user's password.
+     */
     private void saveCredentials(String mail, String pass) {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -138,7 +257,10 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    // Clear saved login credentials if "Remember Password" is unchecked
+    /**
+     * Clears saved login credentials from SharedPreferences if the user
+     * has unchecked the "Remember Password" option.
+     */
     private void clearSavedCredentials() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -147,8 +269,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Displays a dialog that allows the user to recover their password
-     * by providing their registered email.
+     * Displays a dialog to recover the user's password by providing their
+     * registered email address. A password reset email will be sent to
+     * the provided email.
      */
     @SuppressLint("SetTextI18n")
     private void showRecoverPasswordDialog() {
@@ -181,7 +304,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
     /**
-     * Starts the password recovery process by sending a recovery email.
+     * Initiates the password recovery process by sending a password reset
+     * email to the user's registered email address.
      *
      * @param mail The user's email where the recovery instructions will be sent.
      */
@@ -206,13 +330,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
     /**
-     * Signs in the user with the provided email and password using Firebase authentication.
-     * If this is a new user, their information will be added to the Firebase database.
+     * Signs in the user with the provided email and password using Firebase
+     * authentication. If this is a new user, their information will be
+     * added to the Firebase database.
      *
      * @param mail     The user's email address.
      * @param password The user's password.
      */
-
     private void loginUser(String mail, String password) {
         loadingBar.setMessage("Logging In....");
         loadingBar.show();

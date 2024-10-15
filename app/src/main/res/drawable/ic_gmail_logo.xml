@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    >
+
+    <!-- Background (white part of the envelope) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M2,4 L22,4 L12,12 L2,4 Z" />
+
+    <!-- The top of the envelope (red "M" part) -->
+    <path
+        android:fillColor="#020101"
+        android:pathData="M2,4 L12,12 L22,4 L12,14 L2,4 Z" />
+
+    <!-- Left side of the "M" -->
+    <path
+        android:fillColor="#0B0909"
+        android:pathData="M2,4 L2,20 L12,14 L2,4 Z" />
+
+    <!-- Right side of the "M" -->
+    <path
+        android:fillColor="#0C0C0C"
+        android:pathData="M22,4 L22,20 L12,14 L22,4 Z" />
+
+    <!-- Bottom part of the envelope -->
+    <path
+        android:fillColor="#0B0909"
+        android:pathData="M2,20 L22,20 L12,14 L2,20 Z" />
+</vector>
