@@ -113,7 +113,7 @@
                 <!-- Register Button -->
                 <Button
                     android:id="@+id/register_button"
-                    android:layout_width="269dp"
+                    android:layout_width="184dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/register_password"
                     android:layout_centerInParent="true"

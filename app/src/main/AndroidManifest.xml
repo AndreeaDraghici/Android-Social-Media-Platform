@@ -34,15 +34,14 @@
         <activity android:name=".service.board.DashboardActivity" />
         <activity android:name=".service.authentication.LoginActivity" />
 
-        <activity
-            android:name=".service.SplashScreen"
+        <activity android:name=".service.SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".service.activity.UserProfilePageActivity" />
     </application>
 
