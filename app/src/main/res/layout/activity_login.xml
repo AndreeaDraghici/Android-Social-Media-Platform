@@ -121,7 +121,7 @@
                 <!-- Login Button -->
                 <Button
                     android:id="@+id/login_button"
-                    android:layout_width="223dp"
+                    android:layout_width="263dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/forgot_password"
                     android:layout_centerInParent="true"
@@ -145,8 +145,8 @@
 
                 <Button
                     android:id="@+id/google_login_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="51dp"
+                    android:layout_width="254dp"
+                    android:layout_height="50dp"
                     android:layout_below="@id/divider_line"
                     android:layout_centerInParent="true"
                     android:backgroundTint="@color/btnRed"
@@ -160,7 +160,7 @@
                 <!-- Register New Account TextView -->
                 <Button
                     android:id="@+id/needs_new_account"
-                    android:layout_width="221dp"
+                    android:layout_width="257dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/google_login_button"
                     android:layout_centerInParent="true"

@@ -113,7 +113,7 @@
                 <!-- Register Button -->
                 <Button
                     android:id="@+id/register_button"
-                    android:layout_width="184dp"
+                    android:layout_width="283dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/register_password"
                     android:layout_centerInParent="true"
@@ -133,18 +133,18 @@
                     android:layout_marginBottom="16dp"
                     android:background="@color/colorgray01" />
 
-                <!-- Already have an account TextView -->
-                <TextView
+                <!-- Already have an account Button -->
+                <Button
                     android:id="@+id/homepage"
-                    android:layout_width="match_parent"
+                    android:layout_width="286dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/divider_line"
-                    android:layout_marginTop="16dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@android:color/holo_green_dark"
                     android:text="@string/already_have_a_account_sign_in"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="16dp" />
 
             </RelativeLayout>
         </FrameLayout>
