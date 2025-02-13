@@ -1,65 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/blog"
+    android:background="@drawable/background_nature"
     tools:context=".service.post.fragment.AddPostFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:orientation="vertical">
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:background="@drawable/edittext_background"
+        android:backgroundTint="@android:color/white"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:padding="24dp">
 
+        <!-- Post Title EditText -->
         <EditText
             android:id="@+id/ptitle"
-            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edit"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/edittext_background"
             android:hint="@string/enter_title"
-            android:minHeight="80dp"
-            android:padding="10dp"
-            android:textSize="20sp"
+            android:minHeight="60dp"
+            android:padding="16dp"
             android:singleLine="true"
-            android:autofillHints="" />
+            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="18sp"
+            android:elevation="6dp"/>
 
+        <!-- Image for Post -->
         <ImageView
             android:id="@+id/imagep"
             android:layout_width="match_parent"
-            android:layout_height="239dp"
+            android:layout_height="250dp"
             android:layout_marginTop="20dp"
-            android:background="@color/white"
-            android:src="@drawable/ic_image" />
+            android:background="@drawable/edittext_background"
+            android:contentDescription="@string/add_photo"
+            android:elevation="6dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_image"
+            android:padding="12dp"/>
 
+        <!-- Description EditText -->
         <EditText
             android:id="@+id/pdes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:background="@drawable/edit"
+            android:background="@drawable/edittext_background"
             android:gravity="start"
             android:hint="@string/enter_description"
             android:inputType="textCapSentences|textMultiLine"
-            android:minHeight="120dp"
-            android:padding="10dp"
-            android:textSize="20sp"
-            android:singleLine="true"
-            android:autofillHints="" />
+            android:minHeight="130dp"
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="18sp"
+            android:elevation="6dp"/>
 
-
+        <!-- Upload Button -->
         <Button
             android:id="@+id/upload"
-            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="45sp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/button_background"
+            android:elevation="12dp"
             android:text="@string/upload"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:textAlignment="center" />
+            android:paddingVertical="16dp"
+            android:paddingHorizontal="26dp"/>
     </LinearLayout>
 
 </ScrollView>
