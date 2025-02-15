@@ -1,7 +1,9 @@
 package com.ucv.ace.socialmediaplatform.service.post.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,7 +14,6 @@ import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,19 +32,14 @@ import com.ucv.ace.socialmediaplatform.service.post.adapter.AdapterUsers;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class UsersFragment extends Fragment {
 
-    RecyclerView recyclerView;
-    AdapterUsers adapterUsers;
-    List<ModelUsers> usersList;
-    FirebaseAuth firebaseAuth;
+    private RecyclerView recyclerView;
+    private AdapterUsers adapterUsers;
+    private List<ModelUsers> usersList;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference userRef;
+    private ValueEventListener userListener;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -52,69 +48,80 @@ public class UsersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
-        recyclerView = view.findViewById(R.id.recyclep);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        recyclerView = view.findViewById(R.id.recyclerUsers);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        userRef = FirebaseDatabase.getInstance().getReference("Users");
         usersList = new ArrayList<>();
-        firebaseAuth = FirebaseAuth.getInstance();
-        getAllUsers();
+        adapterUsers = new AdapterUsers(getActivity(), usersList);
+        recyclerView.setAdapter(adapterUsers);
+
+        getAllUsers(); // Fetch users from Firebase
+
         return view;
     }
 
     private void getAllUsers() {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.addValueEventListener(new ValueEventListener() {
+        final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
+        if (firebaseAuth == null || firebaseAuth.getCurrentUser() == null) {
+            Log.e("Firebase", "User not authenticated");
+            return;
+        }
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    ModelUsers modelUsers = dataSnapshot1.getValue(ModelUsers.class);
-                    if (modelUsers.getUid() != null && !modelUsers.getUid().equals(firebaseUser.getUid())) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ModelUsers modelUsers = snapshot.getValue(ModelUsers.class);
+
+                    if (modelUsers != null) {
+                        Log.d("Firebase Debug", "User: " + modelUsers.getName() + ", Image: " + modelUsers.getImage());
+                    }
+
+                    if (modelUsers != null && modelUsers.getUid() != null
+                            && !modelUsers.getUid().equals(firebaseUser.getUid())) {
                         usersList.add(modelUsers);
                     }
-                    adapterUsers = new AdapterUsers(getActivity(), usersList);
-                    recyclerView.setAdapter(adapterUsers);
                 }
-
+                adapterUsers.notifyDataSetChanged();
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
 
-    private void searchusers(final String s) {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                usersList.clear();
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    ModelUsers modelUsers = dataSnapshot1.getValue(ModelUsers.class);
-                    if (modelUsers.getUid() != null && !modelUsers.getUid().equals(firebaseUser.getUid())) {
-                        if (modelUsers.getName().toLowerCase().contains(s.toLowerCase()) ||
-                                modelUsers.getEmail().toLowerCase().contains(s.toLowerCase())) {
-                            usersList.add(modelUsers);
+
+    private void searchUsers(final String query) {
+        final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        userRef.orderByChild("name").startAt(query).endAt(query + "\uf8ff")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        usersList.clear();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            ModelUsers modelUsers = snapshot.getValue(ModelUsers.class);
+                            if (modelUsers != null && modelUsers.getUid() != null
+                                    && !modelUsers.getUid().equals(firebaseUser.getUid())) {
+                                usersList.add(modelUsers);
+                            }
                         }
+                        adapterUsers.notifyDataSetChanged();
                     }
-                    adapterUsers = new AdapterUsers(getActivity(), usersList);
-                    adapterUsers.notifyDataSetChanged();
-                    recyclerView.setAdapter(adapterUsers);
-                }
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Firebase", "Search Error", databaseError.toException());
+                    }
+                });
     }
 
     @Override
@@ -127,13 +134,14 @@ public class UsersFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.logout).setVisible(false);
-        MenuItem item = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (!TextUtils.isEmpty(query.trim())) {
-                    searchusers(query);
+                    searchUsers(query);
                 } else {
                     getAllUsers();
                 }
@@ -143,7 +151,7 @@ public class UsersFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (!TextUtils.isEmpty(newText.trim())) {
-                    searchusers(newText);
+                    searchUsers(newText);
                 } else {
                     getAllUsers();
                 }
@@ -154,4 +162,11 @@ public class UsersFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (userRef != null && userListener != null) {
+            userRef.removeEventListener(userListener);
+        }
+    }
 }

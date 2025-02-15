@@ -4,28 +4,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:cardBackgroundColor="@color/colorWhite"
-    app:cardCornerRadius="2dp"
-    app:cardElevation="2dp"
-    app:cardUseCompatPadding="true"
-    app:contentPadding="3dp">
+    android:layout_margin="10dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="10dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@drawable/gradient_card_bg"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imagep"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:src="@drawable/profile" />
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/profile"
+            android:maxWidth="4dp"
+            android:background="@color/colorGray"
+            android:elevation="6dp"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -33,19 +37,20 @@
                 android:id="@+id/namep"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Person NAme"
-                android:textColor="@color/colorBlack"
-                android:textSize="18sp" />
+                android:text="User Name"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"/>
 
             <TextView
                 android:id="@+id/emailp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Person Email"
-                android:textColor="@color/colorBlack" />
-
+                android:text="user@email.com"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-light"/>
         </LinearLayout>
-
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>
