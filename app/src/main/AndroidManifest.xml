@@ -34,6 +34,7 @@
         <activity android:name=".service.authentication.RegisterActivity" />
         <activity android:name=".service.board.DashboardActivity" />
         <activity android:name=".service.authentication.LoginActivity" />
+        <activity android:name=".service.activity.ChatActivity" />
 
         <activity
             android:name=".service.SplashScreen"
