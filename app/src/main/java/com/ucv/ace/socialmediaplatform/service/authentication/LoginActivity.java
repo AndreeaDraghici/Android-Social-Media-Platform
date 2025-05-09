@@ -167,31 +167,31 @@ public class LoginActivity extends AppCompatActivity {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            loadingBar.dismiss();
             if (task.isSuccessful()) {
-                loadingBar.dismiss();
                 FirebaseUser user = mAuth.getCurrentUser();
+                String email = user.getEmail();
+                String uid = user.getUid();
+                String name = user.getDisplayName();
+                String image = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "";
 
-                if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                    // Store user information in Firebase
-                    String email = user.getEmail();
-                    String uid = user.getUid();
-                    HashMap<String, String> userData = new HashMap<>();
-                    userData.put("email", email);
-                    userData.put("uid", uid);
-                    userData.put("name", "");
-                    userData.put("phone", "");
-                    userData.put("image", "");
-                    userData.put("cover", "");
+                HashMap<String, Object> userData = new HashMap<>();
+                userData.put("email", email);
+                userData.put("uid", uid);
+                userData.put("name", name != null ? name : "");
+                userData.put("image", image);
+                userData.put("phone", "");
+                userData.put("onlineStatus", "online");
+                userData.put("typingTo", "noOne");
+                userData.put("cover", "");
 
-                    // Save data in Firebase database
-                    FirebaseDatabase.getInstance().getReference("Users").child(uid).setValue(userData);
-                }
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+                userRef.setValue(userData);
 
                 Toast.makeText(LoginActivity.this, "Google sign-in success!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                 finish();
             } else {
-                loadingBar.dismiss();
                 Toast.makeText(LoginActivity.this, "Firebase Authentication failed.", Toast.LENGTH_LONG).show();
             }
         });

@@ -59,7 +59,7 @@ public class UsersFragment extends Fragment {
         adapterUsers = new AdapterUsers(getActivity(), usersList);
         recyclerView.setAdapter(adapterUsers);
 
-        getAllUsers(); // Fetch users from Firebase
+        getAllUsers();
 
         return view;
     }
@@ -67,7 +67,8 @@ public class UsersFragment extends Fragment {
     private void getAllUsers() {
         final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
-        if (firebaseAuth == null || firebaseAuth.getCurrentUser() == null) {
+
+        if (firebaseUser == null) {
             Log.e("Firebase", "User not authenticated");
             return;
         }
@@ -79,8 +80,8 @@ public class UsersFragment extends Fragment {
                 usersList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ModelUsers modelUsers = snapshot.getValue(ModelUsers.class);
-
                     if (modelUsers != null) {
+                        modelUsers.setUid(snapshot.getKey()); // setează manual UID-ul
                         Log.d("Firebase Debug", "User: " + modelUsers.getName() + ", Image: " + modelUsers.getImage());
                     }
 
@@ -92,13 +93,11 @@ public class UsersFragment extends Fragment {
                 adapterUsers.notifyDataSetChanged();
             }
 
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
     }
-
 
     private void searchUsers(final String query) {
         final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -109,6 +108,9 @@ public class UsersFragment extends Fragment {
                         usersList.clear();
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             ModelUsers modelUsers = snapshot.getValue(ModelUsers.class);
+                            if (modelUsers != null) {
+                                modelUsers.setUid(snapshot.getKey());
+                            }
                             if (modelUsers != null && modelUsers.getUid() != null
                                     && !modelUsers.getUid().equals(firebaseUser.getUid())) {
                                 usersList.add(modelUsers);

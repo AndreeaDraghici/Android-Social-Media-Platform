@@ -1,40 +1,39 @@
-package com.ucv.ace.socialmediaplatform.service.activity;
+package com.ucv.ace.socialmediaplatform.service.post.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.ucv.ace.socialmediaplatform.R;
 
+import java.io.IOException;
 import java.util.HashMap;
 
-
-/**
- * This activity allows the user to manage their profile, such as updating the name,
- * changing the password, and uploading/changing the profile picture.
- * It handles retrieving and displaying the user information from Firebase and
- * updating the Firebase database with changes.
- */
-
-@SuppressWarnings("deprecation")
-public class UserProfilePageActivity extends AppCompatActivity {
+public class EditProfileFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView profileImage;
@@ -46,15 +45,15 @@ public class UserProfilePageActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private ProgressDialog progressDialog;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_profile_page);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
 
-        profileImage = findViewById(R.id.edit_profile_image);
-        nameEditText = findViewById(R.id.edit_name);
-        saveButton = findViewById(R.id.save_button);
-        progressDialog = new ProgressDialog(this);
+        profileImage = view.findViewById(R.id.edit_profile_image);
+        nameEditText = view.findViewById(R.id.edit_name);
+        saveButton = view.findViewById(R.id.save_button);
+        progressDialog = new ProgressDialog(getContext());
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
@@ -63,6 +62,8 @@ public class UserProfilePageActivity extends AppCompatActivity {
         profileImage.setOnClickListener(v -> openImagePicker());
 
         saveButton.setOnClickListener(v -> updateProfile());
+
+        return view;
     }
 
     private void openImagePicker() {
@@ -73,9 +74,9 @@ public class UserProfilePageActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
             imageUri = data.getData();
             Glide.with(this).load(imageUri).into(profileImage);
         }
@@ -84,7 +85,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
     private void updateProfile() {
         String name = nameEditText.getText().toString().trim();
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "Introduceți un nume", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Introduceți un nume", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -100,7 +101,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                     });
                 } else {
                     progressDialog.dismiss();
-                    Toast.makeText(this, "Eroare la salvarea imaginii", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Eroare la salvarea imaginii", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -116,10 +117,9 @@ public class UserProfilePageActivity extends AppCompatActivity {
         userRef.updateChildren(map).addOnCompleteListener(task -> {
             progressDialog.dismiss();
             if (task.isSuccessful()) {
-                Toast.makeText(this, "Profil actualizat cu succes", Toast.LENGTH_SHORT).show();
-                finish();
+                Toast.makeText(getContext(), "Profil actualizat cu succes", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Eroare la actualizare", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Eroare la actualizare", Toast.LENGTH_SHORT).show();
             }
         });
     }
