@@ -1,0 +1,26 @@
+@startuml
+package "View" {
+  [LoginActivity]
+  [FeedFragment]
+}
+
+package "Presenter" {
+  [LoginPresenter]
+  [FeedPresenter]
+}
+
+package "Model" {
+  [AuthRepository]
+  [PostRepository]
+}
+
+LoginActivity --> LoginPresenter : onLoginClicked(email, pass)
+LoginPresenter --> AuthRepository : authenticate(email, pass)
+AuthRepository --> LoginPresenter : authResult(success/fail)
+LoginPresenter --> LoginActivity : showSuccess()/showError()
+
+FeedFragment --> FeedPresenter : loadFeed()
+FeedPresenter --> PostRepository : fetchPosts()
+PostRepository --> FeedPresenter : postsList
+FeedPresenter --> FeedFragment : displayPosts(postsList)
+@enduml

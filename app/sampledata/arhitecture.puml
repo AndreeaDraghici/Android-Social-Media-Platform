@@ -1,0 +1,28 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam layout top to bottom
+
+rectangle "View" as V {
+  component "UI Components" as UI
+}
+
+rectangle "Presenter" as P {
+  component "Handle User Input" as Handle
+  component "Update UI" as Update
+}
+
+rectangle "Model" as M {
+  component "Business Logic" as Logic
+  component "Data Management" as DataMgmt
+}
+
+database "Firebase Database" as DB
+
+UI --> Handle       : User Interactions
+Handle --> Logic    : Requests Data
+Logic --> DataMgmt  : Process Logic
+DataMgmt --> DB     : Firebase Operations
+DB --> DataMgmt     : Storage & Retrieval
+DataMgmt --> Update : Data for Display
+Update --> UI       : Display Data
+@enduml
