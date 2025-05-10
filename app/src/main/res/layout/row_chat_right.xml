@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@id/timetv"
-            android:background="@drawable/edittext_background"
+            android:background="@drawable/bg_chat_sender"
             android:padding="15dp"
             android:text="His Message"
             android:textColor="@color/neutral"
@@ -46,7 +46,7 @@
             android:layout_height="200dp"
             android:layout_alignParentEnd="true"
             android:adjustViewBounds="true"
-            android:background="@drawable/edittext_background"
+            android:background="@drawable/bg_chat_sender"
             android:padding="15dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_images" />
