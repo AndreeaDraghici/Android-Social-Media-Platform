@@ -48,7 +48,8 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         postReference = FirebaseDatabase.getInstance().getReference("Posts");
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_posts, parent, false);
         return new MyHolder(view);
@@ -60,7 +61,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         String postId = post.getPid();
         String imageUrl = post.getUimage();
 
-        // Bind text and image
         holder.title.setText(post.getTitle());
         holder.description.setText(post.getDescription());
         holder.time.setText(getDate(post.getPtime()));
@@ -69,7 +69,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         holder.email.setText(post.getUemail());
         new AsyncTaskLoadPhoto(holder.image).execute(imageUrl);
 
-        // Click "X Likes" to open list
         holder.like.setOnClickListener(v -> {
             if (postId == null || postId.isEmpty()) {
                 Toast.makeText(context, "ID post invalid", Toast.LENGTH_SHORT).show();
@@ -80,73 +79,50 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             context.startActivity(i);
         });
 
-        // Like button toggles Like/Unlike
         holder.likeButton.setOnClickListener(v -> {
             DatabaseReference likesRef = postReference.child(postId).child("Likes");
             DatabaseReference plikeRef = postReference.child(postId).child("plike");
-            likesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            likesRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
                     int current = Integer.parseInt(post.getPlike());
                     if (snapshot.hasChild(myUid)) {
-                        // unlike
                         likesRef.child(myUid).removeValue();
                         plikeRef.setValue(String.valueOf(current - 1));
                         holder.like.setText((current - 1) + " Likes");
                         post.setPlike(String.valueOf(current - 1));
                     } else {
-                        // like
                         likesRef.child(myUid).setValue(true);
                         plikeRef.setValue(String.valueOf(current + 1));
                         holder.like.setText((current + 1) + " Likes");
                         post.setPlike(String.valueOf(current + 1));
                     }
                 }
-                @Override public void onCancelled(@NonNull DatabaseError error) {}
+                @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
             });
         });
 
-        // Comment opens details
         holder.comment.setOnClickListener(v -> {
             Intent intent = new Intent(context, PostDetailsActivity.class);
             intent.putExtra("pid", postId);
+            intent.putExtra("pimage", post.getUimage());
+            intent.putExtra("pdesc", post.getDescription());
+            intent.putExtra("authorName", post.getUemail());
+            intent.putExtra("authorAvatarUrl", imageUrl);
             context.startActivity(intent);
         });
 
-        // More options: delete/share image & text
         holder.more.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(context, holder.more);
             popup.getMenu().add(0, 0, 0, "Delete");
             popup.getMenu().add(0, 1, 1, "Share");
             popup.setOnMenuItemClickListener(item -> {
-                int id = item.getItemId();
-                if (id == 0) {
-                    // Delete post
-                    String pidToDelete = post.getPid();
-                    postReference.child(pidToDelete).removeValue()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    // find the item index by pid to avoid index issues
-                                    for (int i = 0; i < modelPostList.size(); i++) {
-                                        if (modelPostList.get(i).getPid().equals(pidToDelete)) {
-                                            modelPostList.remove(i);
-                                            notifyItemRemoved(i);
-                                            break;
-                                        }
-                                    }
-                                    Toast.makeText(context, "Post deleted", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(context, "Delete failed", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                } else if (id == 1) {
-                    // Share post with image
+                if (item.getItemId() == 0) {
+                    postReference.child(postId).removeValue();
+                } else {
                     Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setType("image/*");
-                    share.putExtra(Intent.EXTRA_STREAM, Uri.parse(imageUrl));
-                    share.putExtra(Intent.EXTRA_TEXT,
-                            post.getTitle() + "\n" + post.getDescription());
-                    share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    share.setType("text/plain");
+                    share.putExtra(Intent.EXTRA_TEXT, post.getTitle() + "\n" + post.getDescription());
                     context.startActivity(Intent.createChooser(share, "Share via"));
                 }
                 return true;
@@ -155,7 +131,10 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         });
     }
 
-    @Override public int getItemCount() { return modelPostList.size(); }
+    @Override
+    public int getItemCount() {
+        return modelPostList.size();
+    }
 
     private String getDate(String time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
@@ -168,6 +147,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         TextView title, description, time, like, comments, email;
         Button likeButton, comment;
         ImageButton more;
+
         MyHolder(View v) {
             super(v);
             image = v.findViewById(R.id.pimagetv);

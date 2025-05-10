@@ -169,8 +169,54 @@ public class ModelPost {
         this.pid = key;
     }
 
+    /**
+     * Sets the time the post was made.
+     *
+     * @param plike The number of likes the post has received.
+     */
     public void setPlike(String plike) {
         this.plike = plike;
+    }
+
+    /**
+     * Sets the unique identifier (PID) of the post.
+     *
+     * @param pcomments The number of comments on the post.
+     */
+    public void setPcomments(String pcomments) {
+        this.pcomments = pcomments;
+    }
+
+    public void setPtime(String ptime) {
+        this.ptime = ptime;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setUemail(String uemail) {
+        this.uemail = uemail;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public void setUimage(String uimage) {
+        this.uimage = uimage;
+    }
+
+    public void setUname(String uname) {
+        this.uname = uname;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setUdp(String udp) {
+        this.udp = udp;
     }
 
     /**
