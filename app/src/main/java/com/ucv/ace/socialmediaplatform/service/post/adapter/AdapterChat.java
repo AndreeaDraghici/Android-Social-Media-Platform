@@ -70,6 +70,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
         String timestamp = chat.getTimestamp();
         String type = chat.getType();
 
+
         if (!chat.getSender().equals(myUid)) {
             DatabaseReference userRef = FirebaseDatabase.getInstance()
                     .getReference("Users")
