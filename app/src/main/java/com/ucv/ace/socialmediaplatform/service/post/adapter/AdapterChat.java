@@ -43,11 +43,12 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
     List<ModelChat> list;
     String imageurl;
     FirebaseUser firebaseUser;
-
+    private String myUid;
     public AdapterChat(Context context, List<ModelChat> list, String imageurl) {
         this.context = context;
         this.list = list;
         this.imageurl = imageurl;
+        this.myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     @NonNull
@@ -69,7 +70,35 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
         String timestamp = chat.getTimestamp();
         String type = chat.getType();
 
-        // Setează ora
+        if (!chat.getSender().equals(myUid)) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(chat.getSender());
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String imageUrl = snapshot.child("image").getValue(String.class);
+                    String senderName = snapshot.child("name").getValue(String.class);
+
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .placeholder(R.drawable.ic_image)
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                                .into(holder.image);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
+
         if (!TextUtils.isEmpty(timestamp)) {
             Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
             calendar.setTimeInMillis(Long.parseLong(timestamp));
@@ -79,40 +108,31 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
             holder.time.setText("");
         }
 
-        // ✅ Asta era probabil lipsă sau ascunsă:
+
         if ("text".equals(type)) {
             holder.message.setVisibility(View.VISIBLE);
             holder.mimage.setVisibility(View.GONE);
             holder.message.setText(message);
-        } else if ("images".equals(type)) {
+        } else if ("image".equals(type)) {
             holder.message.setVisibility(View.GONE);
             holder.mimage.setVisibility(View.VISIBLE);
-            Glide.with(context).load(message).into(holder.mimage);
+
+            Glide.with(context)
+                    .load(chat.getMessage())
+                    .placeholder(R.drawable.ic_image)
+                    .into(holder.mimage);
         } else {
             holder.message.setVisibility(View.GONE);
             holder.mimage.setVisibility(View.GONE);
         }
 
-        holder.msglayput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Delete Message");
-                builder.setMessage("Are You Sure To Delete This Message");
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteMsg(position);
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.create().show();
-            }
+        holder.msglayput.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Delete Message");
+            builder.setMessage(new StringBuilder().append("Are You Sure To Delete This Message?\n").append("This action cannot be undone.").toString());
+            builder.setPositiveButton("Delete", (dialog, which) -> deleteMsg(position));
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+            builder.create().show();
         });
     }
 
@@ -128,13 +148,9 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                     if (dataSnapshot1.child("sender").getValue().equals(myuid)) {
                         // any two of below can be used
                         dataSnapshot1.getRef().removeValue();
-                       /* HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("message", "This Message Was Deleted");
-                        dataSnapshot1.getRef().updateChildren(hashMap);
-                        Toast.makeText(context,"Message Deleted.....",Toast.LENGTH_LONG).show();
-*/
+                        Toast.makeText(context, "Message Deleted.....", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(context, "you can delete only your msg....", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "You can delete only your msg....", Toast.LENGTH_LONG).show();
                     }
                 }
             }

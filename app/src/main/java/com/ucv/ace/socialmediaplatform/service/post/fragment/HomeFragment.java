@@ -1,5 +1,6 @@
 package com.ucv.ace.socialmediaplatform.service.post.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
-import android.window.SplashScreen;
+import com.ucv.ace.socialmediaplatform.service.SplashScreen;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuItemCompat;
@@ -77,7 +78,11 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                Context context = getContext();
+                if (context != null) {
+                    Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
             }
         });
     }
@@ -112,7 +117,11 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                Context context = getContext();
+                if (context != null) {
+                    Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
             }
         });
     }
@@ -157,15 +166,18 @@ public class HomeFragment extends Fragment {
     // Logout functionality
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         if (item.getItemId() == R.id.logout) {
             firebaseAuth.signOut();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                startActivity(new Intent(getContext(), SplashScreen.class));
-            }
-            getActivity().finishActivity(0);
-        }
 
+            Intent intent = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                intent = new Intent(requireContext(), SplashScreen.class);
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // clear back stack
+            startActivity(intent);
+
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

@@ -348,7 +348,27 @@ public class LoginActivity extends AppCompatActivity {
 
                 loadingBar.dismiss();
                 FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
 
+                    HashMap<String, Object> userData = new HashMap<>();
+                    userData.put("email", user.getEmail());
+                    userData.put("uid", user.getUid());
+
+                    String currentName = user.getDisplayName() != null ? user.getDisplayName() : null;
+                    if (currentName != null && !currentName.isEmpty()) {
+                        userData.put("name", currentName);
+                    }
+
+                    String currentPhotoUrl = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null;
+                    if (currentPhotoUrl != null && !currentPhotoUrl.isEmpty()) {
+                        userData.put("image", currentPhotoUrl);
+                    }
+                    userData.put("onlineStatus", "online");
+                    userData.put("typingTo", "noOne");
+
+                    userRef.updateChildren(userData);
+                }
                 // Check if the user is logging in for the first time (new user)
                 if (Objects.requireNonNull(task.getResult().getAdditionalUserInfo()).isNewUser()) {
 
