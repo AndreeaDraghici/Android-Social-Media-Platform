@@ -11,21 +11,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="5dp"
-            android:padding="15dp"
-            android:text="@string/all_posts"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:targetApi="s" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postrecyclerview"
             android:layout_width="416dp"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            android:clipToPadding="false"
             android:layout_height="669dp" />
 
     </LinearLayout>

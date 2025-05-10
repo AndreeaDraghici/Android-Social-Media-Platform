@@ -161,6 +161,19 @@ public class ModelPost {
     }
 
     /**
+     * Sets the time the post was made.
+     *
+     * @param key The time the post was made.
+     */
+    public void setPid(String key) {
+        this.pid = key;
+    }
+
+    public void setPlike(String plike) {
+        this.plike = plike;
+    }
+
+    /**
      * Default constructor.
      * Initializes an empty instance of the ModelPost class.
      */
@@ -205,4 +218,6 @@ public class ModelPost {
         this.udp = udp;
         this.uimage = uimage;
     }
+
+
 }

@@ -70,6 +70,7 @@ public class HomeFragment extends Fragment {
                 posts.clear();
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     ModelPost modelPost = dataSnapshot1.getValue(ModelPost.class);
+                    modelPost.setPid(dataSnapshot1.getKey());
                     posts.add(modelPost);
                     adapterPosts = new AdapterPosts(getActivity(), posts);
                     recyclerView.setAdapter(adapterPosts);
