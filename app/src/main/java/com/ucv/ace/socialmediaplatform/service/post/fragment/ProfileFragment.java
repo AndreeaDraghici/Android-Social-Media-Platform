@@ -1,7 +1,6 @@
 package com.ucv.ace.socialmediaplatform.service.post.fragment;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,35 +23,85 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ucv.ace.socialmediaplatform.R;
-import com.ucv.ace.socialmediaplatform.service.activity.UserProfilePageActivity;
+import com.ucv.ace.socialmediaplatform.service.post.fragment.EditProfileFragment;
 
 public class ProfileFragment extends Fragment {
 
-    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference userRef;
-    private ImageView avatartv;
-    private TextView name, email;
-    private FloatingActionButton floatingActionButton;
+    private ImageView avatarIv;
+    private TextView nameTv, emailTv;
+    private FloatingActionButton fab;
     private ProgressDialog progressDialog;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        userRef = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+    private final ValueEventListener userListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snap) {
+            // If fragment no longer attached, bail out
+            if (!isAdded()) return;
 
-        name = view.findViewById(R.id.nametv);
-        email = view.findViewById(R.id.emailtv);
-        avatartv = view.findViewById(R.id.avatariv);
-        floatingActionButton = view.findViewById(R.id.fab);
-        progressDialog = new ProgressDialog(getActivity());
+            progressDialog.dismiss();
+
+            if (!snap.exists()) {
+                Log.w("ProfileFragment", "User snapshot empty");
+                return;
+            }
+
+            String name  = snap.child("name" ).getValue(String.class);
+            String email = snap.child("email").getValue(String.class);
+            String image = snap.child("image").getValue(String.class);
+
+            nameTv.setText(name  != null ? name  : "Unknown");
+            emailTv.setText(email != null ? email : "No email");
+
+            // Use the ImageView's own context, safe even if fragment detached later
+            Glide.with(avatarIv.getContext())
+                    .load(image)
+                    .placeholder(R.drawable.ic_image)
+                    .error(R.drawable.ic_image)
+                    .circleCrop()
+                    .into(avatarIv);
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError err) {
+            if (!isAdded()) return;
+            progressDialog.dismiss();
+            Log.e("ProfileFragment", "Failed to load profile", err.toException());
+        }
+    };
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        // 1) Firebase & refs
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        userRef      = FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(firebaseUser.getUid());
+
+        // 2) Wire views
+        avatarIv = view.findViewById(R.id.avatariv);
+        nameTv   = view.findViewById(R.id.nametv);
+        emailTv  = view.findViewById(R.id.emailtv);
+        fab      = view.findViewById(R.id.fab);
+
+        // 3) Create progressDialog *after* view exists
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading profile…");
         progressDialog.setCanceledOnTouchOutside(false);
 
-        loadUserData();
+        // 4) Start listening
+        progressDialog.show();
+        userRef.addValueEventListener(userListener);
 
-        floatingActionButton.setOnClickListener(v -> {
+        // 5) Edit screen navigation
+        fab.setOnClickListener(v -> {
+            if (!isAdded()) return;
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
@@ -61,36 +110,17 @@ public class ProfileFragment extends Fragment {
                     .commit();
         });
 
-
-
         return view;
     }
 
-    private void loadUserData() {
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String nameValue = snapshot.child("name").getValue(String.class);
-                    String emailValue = snapshot.child("email").getValue(String.class);
-                    String imageUrl = snapshot.child("image").getValue(String.class);
-
-                    name.setText(nameValue != null ? nameValue : "Nume necunoscut");
-                    email.setText(emailValue != null ? emailValue : "Email necunoscut");
-
-                    try {
-                        Glide.with(requireActivity()).load(imageUrl).placeholder(R.drawable.ic_image).into(avatartv);
-                    } catch (Exception e) {
-                        Log.e("ProfileFragment", "Eroare la încărcarea imaginii", e);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("ProfileFragment", "Eroare la citirea datelor", error.toException());
-            }
-        });
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Clean up listener and dialog
+        userRef.removeEventListener(userListener);
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     @Override

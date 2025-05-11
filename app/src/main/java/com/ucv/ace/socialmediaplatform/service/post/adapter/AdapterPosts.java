@@ -1,9 +1,7 @@
-// AdapterPosts.java
 package com.ucv.ace.socialmediaplatform.service.post.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,112 +16,160 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.bumptech.glide.Glide;
 import com.ucv.ace.socialmediaplatform.R;
 import com.ucv.ace.socialmediaplatform.model.ModelPost;
 import com.ucv.ace.socialmediaplatform.service.activity.PostDetailsActivity;
 import com.ucv.ace.socialmediaplatform.service.activity.PostLikedActivity;
-import com.ucv.ace.socialmediaplatform.service.AsyncTaskLoadPhoto;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
-    private Context context;
-    private List<ModelPost> modelPostList;
-    private String myUid;
-    private DatabaseReference postReference;
+    private final Context context;
+    private final List<ModelPost> posts;
 
-    public AdapterPosts(Context context, List<ModelPost> modelPostList) {
+    public AdapterPosts(Context context, List<ModelPost> posts) {
         this.context = context;
-        this.modelPostList = modelPostList;
-        myUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        postReference = FirebaseDatabase.getInstance().getReference("Posts");
+        this.posts   = posts;
     }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.row_posts, parent, false);
-        return new MyHolder(view);
+        View v = LayoutInflater.from(context)
+                .inflate(R.layout.row_posts, parent, false);
+        return new MyHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyHolder holder, int position) {
-        ModelPost post = modelPostList.get(position);
-        String postId = post.getPid();
-        String imageUrl = post.getUimage();
+    public void onBindViewHolder(@NonNull MyHolder h, int i) {
+        ModelPost post = posts.get(i);
+        String pid     = post.getPid();
+        String authorUid = post.getUid();
 
-        holder.title.setText(post.getTitle());
-        holder.description.setText(post.getDescription());
-        holder.time.setText(getDate(post.getPtime()));
-        holder.like.setText(post.getPlike() + " Likes");
-        holder.comments.setText(post.getPcomments() + " Comments");
-        holder.email.setText(post.getUemail());
-        new AsyncTaskLoadPhoto(holder.image).execute(imageUrl);
+        // 1) Bind post data
+        long ts = Long.parseLong(post.getPtime());
+        h.timeTv.setText(DateFormat.format(
+                "dd-MM-yyyy hh:mm aa",
+                new Date(ts)
+        ));
+        h.titleTv.setText(post.getTitle());
+        h.descriptionTv.setText(post.getDescription());
+        Glide.with(context)
+                .load(post.getUimage())
+                .centerCrop()
+                .placeholder(R.color.colorGray)
+                .into(h.postImageIv);
 
-        holder.like.setOnClickListener(v -> {
-            if (postId == null || postId.isEmpty()) {
-                Toast.makeText(context, "ID post invalid", Toast.LENGTH_SHORT).show();
+        h.likeCountTv.setText(post.getPlike() + " Likes");
+        h.commentCountTv.setText(post.getPcomments() + " Comments");
+
+        // 2) Lookup author info from /Users/{authorUid}
+        FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(authorUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(@NonNull DataSnapshot snap) {
+                        if (!snap.exists()) return;
+                        String name   = snap.child("name" ).getValue(String.class);
+                        String avatar = snap.child("image").getValue(String.class);
+                        h.usernameTv.setText(name);
+                        Glide.with(context)
+                                .load(avatar)
+                                .circleCrop()
+                                .placeholder(R.drawable.ic_image)
+                                .into(h.avatarIv);
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError e) { }
+                });
+
+        // 3) Likes count click → list likers
+        h.likeCountTv.setOnClickListener(v -> {
+            if (pid == null || pid.isEmpty()) {
+                Toast.makeText(context, "Invalid post ID", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Intent i = new Intent(context, PostLikedActivity.class);
-            i.putExtra("EXTRA_POST_ID", postId);
-            context.startActivity(i);
+            Intent likeIntent = new Intent(context, PostLikedActivity.class);
+            likeIntent.putExtra("EXTRA_POST_ID", pid);
+            context.startActivity(likeIntent);
         });
 
-        holder.likeButton.setOnClickListener(v -> {
-            DatabaseReference likesRef = postReference.child(postId).child("Likes");
-            DatabaseReference plikeRef = postReference.child(postId).child("plike");
-            likesRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                    int current = Integer.parseInt(post.getPlike());
-                    if (snapshot.hasChild(myUid)) {
-                        likesRef.child(myUid).removeValue();
-                        plikeRef.setValue(String.valueOf(current - 1));
-                        holder.like.setText((current - 1) + " Likes");
-                        post.setPlike(String.valueOf(current - 1));
-                    } else {
-                        likesRef.child(myUid).setValue(true);
-                        plikeRef.setValue(String.valueOf(current + 1));
-                        holder.like.setText((current + 1) + " Likes");
-                        post.setPlike(String.valueOf(current + 1));
-                    }
-                }
-                @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
-            });
+        // 4) Like button toggle
+        h.likeBtn.setOnClickListener(v -> {
+            FirebaseDatabase.getInstance()
+                    .getReference("Posts")
+                    .child(pid)
+                    .child("Likes")
+                    .child(FirebaseAuth.getInstance().getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        boolean already = task.getResult().exists();
+                        if (already) {
+                            // remove like
+                            FirebaseDatabase.getInstance()
+                                    .getReference("Posts")
+                                    .child(pid)
+                                    .child("Likes")
+                                    .child(FirebaseAuth.getInstance().getUid())
+                                    .removeValue();
+                            int cnt = Integer.parseInt(post.getPlike()) - 1;
+                            post.setPlike(String.valueOf(cnt));
+                        } else {
+                            // add like
+                            FirebaseDatabase.getInstance()
+                                    .getReference("Posts")
+                                    .child(pid)
+                                    .child("Likes")
+                                    .child(FirebaseAuth.getInstance().getUid())
+                                    .setValue(true);
+                            int cnt = Integer.parseInt(post.getPlike()) + 1;
+                            post.setPlike(String.valueOf(cnt));
+                        }
+                        // update count both in UI and in RTDB
+                        FirebaseDatabase.getInstance()
+                                .getReference("Posts")
+                                .child(pid)
+                                .child("plike")
+                                .setValue(post.getPlike());
+                        h.likeCountTv.setText(post.getPlike() + " Likes");
+                    });
         });
 
-        holder.comment.setOnClickListener(v -> {
-            Intent intent = new Intent(context, PostDetailsActivity.class);
-            intent.putExtra("pid", postId);
-            intent.putExtra("pimage", post.getUimage());
-            intent.putExtra("pdesc", post.getDescription());
-            intent.putExtra("authorName", post.getUemail());
-            intent.putExtra("authorAvatarUrl", imageUrl);
-            context.startActivity(intent);
+        // 5) Comment button → post details
+        h.commentBtn.setOnClickListener(v -> {
+            Intent details = new Intent(context, PostDetailsActivity.class);
+            details.putExtra("pid", pid);
+            details.putExtra("pimage", post.getUimage());
+            details.putExtra("pdesc", post.getDescription());
+            details.putExtra("authorUid", authorUid);
+            context.startActivity(details);
         });
 
-        holder.more.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(context, holder.more);
-            popup.getMenu().add(0, 0, 0, "Delete");
-            popup.getMenu().add(0, 1, 1, "Share");
+        // 6) More menu (delete/share)
+        h.moreBtn.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(context, h.moreBtn);
+            popup.getMenu().add("Delete");
+            popup.getMenu().add("Share");
             popup.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == 0) {
-                    postReference.child(postId).removeValue();
+                if (item.getTitle().equals("Delete")) {
+                    FirebaseDatabase.getInstance()
+                            .getReference("Posts")
+                            .child(pid)
+                            .removeValue();
                 } else {
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setType("text/plain");
-                    share.putExtra(Intent.EXTRA_TEXT, post.getTitle() + "\n" + post.getDescription());
-                    context.startActivity(Intent.createChooser(share, "Share via"));
+                    Intent share = new Intent(Intent.ACTION_SEND)
+                            .setType("text/plain")
+                            .putExtra(Intent.EXTRA_TEXT,
+                                    post.getTitle() + "\n" + post.getDescription());
+                    context.startActivity(
+                            Intent.createChooser(share, "Share post via")
+                    );
                 }
                 return true;
             });
@@ -131,35 +177,32 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return modelPostList.size();
-    }
-
-    private String getDate(String time) {
-        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(Long.parseLong(time));
-        return DateFormat.format("dd-MM-yyyy hh:mm aa", cal).toString();
+    @Override public int getItemCount() {
+        return posts.size();
     }
 
     static class MyHolder extends RecyclerView.ViewHolder {
-        ImageView image;
-        TextView title, description, time, like, comments, email;
-        Button likeButton, comment;
-        ImageButton more;
+        ImageView   avatarIv, postImageIv;
+        TextView    usernameTv, timeTv, titleTv, descriptionTv;
+        TextView    likeCountTv, commentCountTv;
+        Button      likeBtn, commentBtn;
+        ImageButton moreBtn;
 
-        MyHolder(View v) {
+        MyHolder(@NonNull View v) {
             super(v);
-            image = v.findViewById(R.id.pimagetv);
-            title = v.findViewById(R.id.ptitletv);
-            description = v.findViewById(R.id.descript);
-            time = v.findViewById(R.id.utimetv);
-            like = v.findViewById(R.id.plikeb);
-            comments = v.findViewById(R.id.pcommentco);
-            email = v.findViewById(R.id.uemail);
-            likeButton = v.findViewById(R.id.like);
-            comment = v.findViewById(R.id.comment);
-            more = v.findViewById(R.id.morebtn);
+            avatarIv        = v.findViewById(R.id.avatarIv);
+            usernameTv      = v.findViewById(R.id.usernameTv);
+            timeTv          = v.findViewById(R.id.timeTv);
+            moreBtn         = v.findViewById(R.id.moreBtn);
+
+            titleTv         = v.findViewById(R.id.titleTv);
+            descriptionTv   = v.findViewById(R.id.descriptionTv);
+            postImageIv     = v.findViewById(R.id.postImageIv);
+
+            likeCountTv     = v.findViewById(R.id.likeCountTv);
+            commentCountTv  = v.findViewById(R.id.commentCountTv);
+            likeBtn         = v.findViewById(R.id.likeBtn);
+            commentBtn      = v.findViewById(R.id.commentBtn);
         }
     }
 }
