@@ -1,0 +1,32 @@
+@startuml
+package "Client-side (Android App)" {
+  rectangle "View" as V {
+    [Activities & Fragments] as AF
+    [Adapters for RecyclerView] as AR
+    [Utility Classes] as UC
+  }
+}
+
+rectangle "Presenter" as P {
+  [Interaction Logic] as IL
+  [View Updaters] as VU
+}
+
+package "Server-side (Firebase)" {
+  rectangle "Model" as M {
+    [Authentication] as MA
+    [Database Operations] as MDO
+    [Storage Management] as MSM
+    [Notification Services] as MNS
+  }
+}
+
+AF -right-> IL : User Inputs
+IL -right-> MA : Auth Requests
+IL -down-> MDO : Data Requests
+MA -left-> VU : Update View
+MDO -left-> VU : Update View
+MSM -up-> VU : Update View with Images
+MNS -right-> VU : Trigger Notifications
+VU -up-> AF : Updates UI
+@enduml

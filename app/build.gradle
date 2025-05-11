@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     // Add the Google services Gradle plugin
     id 'com.google.gms.google-services'
+    
 }
 
 android {
@@ -35,23 +36,23 @@ dependencies {
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.3')
 
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.5'
-
-
-    // For example, add the dependencies for Firebase Authentication and Cloud Firestore
+    // dependencies for Firebase Authentication and Cloud Firestore
     implementation 'com.google.firebase:firebase-auth:21.2.0'
     implementation 'com.google.firebase:firebase-firestore:24.4.5'
     implementation 'com.google.firebase:firebase-database:20.1.0'
     implementation 'com.google.firebase:firebase-storage:20.1.0'
+
+    // dependency for Google connection
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
 
     // Add the dependency for the Firebase SDK for Google Analytics
     // When using the BoM, don't specify versions in Firebase dependencies
@@ -70,5 +71,4 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom')
     implementation 'com.google.firebase:firebase-iid:21.1.0'
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
-
 }

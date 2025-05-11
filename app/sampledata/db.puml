@@ -1,0 +1,40 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Post {
+  + postId: String
+  --
+  title: String
+  description: String
+  pTime: Long
+  pLikes: Integer
+  uId: String
+  uEmail: String
+  uName: String
+  image: String
+}
+
+class Comment {
+  + commentId: String
+  --
+  comment: String
+  cTime: Long
+  uId: String
+  uEmail: String
+  uName: String
+}
+
+class User {
+  + userId: String
+  --
+  name: String
+  email: String
+  image: String
+  onlineStatus: String
+  typingTo: String
+}
+
+Post "1" -- "*" Comment : has
+User "1" -- "*" Post    : creates
+User "1" -- "*" Comment : writes
+@enduml

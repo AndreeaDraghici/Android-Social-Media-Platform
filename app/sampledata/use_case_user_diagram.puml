@@ -1,0 +1,47 @@
+@startuml
+left to right direction
+skinparam usecase {
+   BackgroundColor LightBlue
+   FontSize 12
+   BorderColor Black
+   FontColor Red
+}
+
+actor User
+
+rectangle "User Use Cases" {
+  usecase "Sign Up"                as UC1
+  usecase "Sign In"                as UC2
+  usecase "Reset Password"         as UC16
+  usecase "Edit Profile"           as UC3
+  usecase "Add a Post"             as UC5
+  usecase "Edit a Post"            as UC17
+  usecase "Delete a Post"          as UC6
+  usecase "Share a Post"           as UC7
+  usecase "View Posts"             as UC9
+  usecase "Like a Post"            as UC10
+  usecase "Comment on a Post"      as UC11
+  usecase "View Likers"            as UC18
+  usecase "Send Message"           as UC19
+  usecase "Delete Message"         as UC20
+  usecase "Search Posts"           as UC14
+  usecase "Log Out"                as UC15
+}
+
+User --> UC1
+User --> UC2
+User --> UC16
+User --> UC3
+User --> UC5
+User --> UC17
+User --> UC6
+User --> UC7
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC18
+User --> UC19
+User --> UC20
+User --> UC14
+User --> UC15
+@enduml

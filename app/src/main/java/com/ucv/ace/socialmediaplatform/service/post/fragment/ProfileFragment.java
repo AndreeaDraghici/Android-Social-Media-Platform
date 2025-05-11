@@ -1,19 +1,18 @@
-
 package com.ucv.ace.socialmediaplatform.service.post.fragment;
 
-import android.content.Intent;
-
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.app.ProgressDialog;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,76 +21,106 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ucv.ace.socialmediaplatform.R;
-import com.ucv.ace.socialmediaplatform.service.activity.UserProfilePageActivity;
+import com.ucv.ace.socialmediaplatform.service.post.fragment.EditProfileFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * In the ProfileFragment We will be showing the Profile of the user where we will be showing users’ data.
- */
-@SuppressWarnings("ALL")
 public class ProfileFragment extends Fragment {
 
-    private FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
-    ImageView avatartv;
-    TextView name, email;
-    FloatingActionButton floatingActionButton;
-    ProgressDialog progressDialog;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference userRef;
+    private ImageView avatarIv;
+    private TextView nameTv, emailTv;
+    private FloatingActionButton fab;
+    private ProgressDialog progressDialog;
 
+    private final ValueEventListener userListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snap) {
+            // If fragment no longer attached, bail out
+            if (!isAdded()) return;
+
+            progressDialog.dismiss();
+
+            if (!snap.exists()) {
+                Log.w("ProfileFragment", "User snapshot empty");
+                return;
+            }
+
+            String name  = snap.child("name" ).getValue(String.class);
+            String email = snap.child("email").getValue(String.class);
+            String image = snap.child("image").getValue(String.class);
+
+            nameTv.setText(name  != null ? name  : "Unknown");
+            emailTv.setText(email != null ? email : "No email");
+
+            // Use the ImageView's own context, safe even if fragment detached later
+            Glide.with(avatarIv.getContext())
+                    .load(image)
+                    .placeholder(R.drawable.ic_image)
+                    .error(R.drawable.ic_image)
+                    .circleCrop()
+                    .into(avatarIv);
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError err) {
+            if (!isAdded()) return;
+            progressDialog.dismiss();
+            Log.e("ProfileFragment", "Failed to load profile", err.toException());
+        }
+    };
+
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        //Inflate the layout for this fragmentcreating a  view to inflate the layout.
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        firebaseAuth = FirebaseAuth.getInstance();
 
-        // getting current user data.
-        firebaseUser = firebaseAuth.getCurrentUser();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("Users");
+        // 1) Firebase & refs
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        userRef      = FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(firebaseUser.getUid());
 
-        // Initialising the text view.
-        name = view.findViewById(R.id.nametv);
-        floatingActionButton = view.findViewById(R.id.fab);
-        progressDialog = new ProgressDialog(getActivity());
+        // 2) Wire views
+        avatarIv = view.findViewById(R.id.avatariv);
+        nameTv   = view.findViewById(R.id.nametv);
+        emailTv  = view.findViewById(R.id.emailtv);
+        fab      = view.findViewById(R.id.fab);
+
+        // 3) Create progressDialog *after* view exists
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading profile…");
         progressDialog.setCanceledOnTouchOutside(false);
-        Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
 
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+        // 4) Start listening
+        progressDialog.show();
+        userRef.addValueEventListener(userListener);
 
-                    // Retrieving Data from firebase.
-                    String name = "" + dataSnapshot1.child("name").getValue();
-                    String emaill = "" + dataSnapshot1.child("email").getValue();
-                    String image = "" + dataSnapshot1.child("image").getValue();
-
-                    // Setting data to our text view.
-                    ProfileFragment.this.name.setText(name);
-                    email.setText(emaill);
-                    try {
-                        Glide.with(requireActivity()).load(image).into(avatartv);
-                    } catch (Exception e) {
-                        Log.e("TAG", "Error occurred while load image due to: ", e);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+        // 5) Edit screen navigation
+        fab.setOnClickListener(v -> {
+            if (!isAdded()) return;
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content, new EditProfileFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
-        // On click we will open UserProfilePageActivity
-        floatingActionButton.setOnClickListener(v -> startActivity(new Intent(getActivity(), UserProfilePageActivity.class)));
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Clean up listener and dialog
+        userRef.removeEventListener(userListener);
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     @Override

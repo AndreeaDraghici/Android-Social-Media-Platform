@@ -6,10 +6,18 @@
         android:title="@string/home" />
     <item
         android:id="@+id/nav_addblogs"
-        android:icon="@drawable/ic_add"
-        android:title="@string/add_posts" />
+        android:icon="?attr/actionModeCopyDrawable"
+        android:title="Posts" />
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_account"
+        android:icon="@android:drawable/ic_menu_view"
         android:title="@string/profile" />
+    <item
+        android:id="@+id/nav_users"
+        android:icon="@drawable/ic_users"
+        android:title="Friends" />
+<!--    <item-->
+<!--        android:id="@+id/nav_chat"-->
+<!--        android:icon="@drawable/ic_chat"-->
+<!--        android:title="ChatList" />-->
 </menu>

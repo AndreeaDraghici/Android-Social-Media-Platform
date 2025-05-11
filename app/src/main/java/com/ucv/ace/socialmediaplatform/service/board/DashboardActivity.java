@@ -3,16 +3,20 @@ package com.ucv.ace.socialmediaplatform.service.board;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ucv.ace.socialmediaplatform.R;
 import com.ucv.ace.socialmediaplatform.service.post.fragment.AddPostFragment;
+import com.ucv.ace.socialmediaplatform.service.post.fragment.ChatListFragment;
 import com.ucv.ace.socialmediaplatform.service.post.fragment.HomeFragment;
 import com.ucv.ace.socialmediaplatform.service.post.fragment.ProfileFragment;
+import com.ucv.ace.socialmediaplatform.service.post.fragment.UsersFragment;
 
 
 /**
@@ -75,6 +79,15 @@ public class DashboardActivity extends AppCompatActivity {
                     fragmentTransaction4.replace(R.id.content, fragment4, "");
                     fragmentTransaction4.commit();
                     return true;
+
+                case R.id.nav_users:
+                    actionBar.setTitle("Users");
+                    UsersFragment fragment2 = new UsersFragment();
+                    FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction2.replace(R.id.content, fragment2, "");
+                    fragmentTransaction2.commit();
+                    return true;
+
 
             }
             return false;

@@ -26,10 +26,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,6 +42,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ucv.ace.socialmediaplatform.R;
 import com.ucv.ace.socialmediaplatform.service.board.DashboardActivity;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -65,15 +67,16 @@ public class AddPostFragment extends Fragment {
     private static final int IMAGE_PICKCAMERA_REQUEST = 400;
     Uri imageuri = null;
 
-    public AddPostFragment() {
-        // Required empty public constructor
-    }
-
     FirebaseAuth firebaseAuth;
     EditText title, description;
     String name, email, uid, dp;
     DatabaseReference databaseReference;
     Button upload;
+
+    public AddPostFragment() {
+        // Required empty public constructor
+    }
+
 
     /**
      * Initializes the activity.
@@ -99,7 +102,12 @@ public class AddPostFragment extends Fragment {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     name = Objects.requireNonNull(dataSnapshot1.child("name").getValue()).toString();
                     email = "" + dataSnapshot1.child("email").getValue();
-                    dp = "" + dataSnapshot1.child("image").getValue().toString();
+                    if (dataSnapshot1.child("image").getValue() != null) {
+                        dp = dataSnapshot1.child("image").getValue().toString();
+                    } else {
+                        dp = "";
+                    }
+
                 }
             }
 
@@ -144,6 +152,10 @@ public class AddPostFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Show the dialog box to select the image from camera or storage.
+     * If camera is selected then check for the permission. If not given then request for permission.
+     */
     private void showImagePicDialog() {
         String[] options = {"Camera"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -283,7 +295,7 @@ public class AddPostFragment extends Fragment {
      */
     private void uploadData(final String title, final String description) {
 
-        /** show the progress dialog box. **/
+        /** show the progress dialog box.  **/
         progressDialog.setMessage("Publishing Post");
         progressDialog.show();
         final String timestamp = String.valueOf(System.currentTimeMillis());
@@ -299,7 +311,7 @@ public class AddPostFragment extends Fragment {
         storageReference1.putBytes(data).addOnSuccessListener(taskSnapshot -> {
 
             /**
-             *  We will get the url of our image using uritask.
+             *  We will get the url of our image using uritask. We will get the url of image uploaded.
              */
             Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl(); /** getting the url of image uploaded. **/
             while (!uriTask.isSuccessful()) ;
@@ -345,7 +357,7 @@ public class AddPostFragment extends Fragment {
     }
 
     /**
-     * Here we are getting data from image.
+     * Here we are getting data from image. If the image is selected then set the image uri.
      **/
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

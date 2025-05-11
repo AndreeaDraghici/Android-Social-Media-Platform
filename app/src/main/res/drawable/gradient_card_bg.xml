@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- White background with rounded corners -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <solid android:color="#F0FFFFFF" /> <!-- Semi-transparent white -->
+        </shape>
+    </item>
+
+    <!-- Additional white overlay for a soft blur effect -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <solid android:color="#B0FFFFFF" /> <!-- More opacity for a softer look -->
+        </shape>
+    </item>
+
+</layer-list>

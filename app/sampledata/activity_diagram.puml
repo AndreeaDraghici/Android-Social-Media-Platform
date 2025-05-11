@@ -1,0 +1,64 @@
+@startuml
+|User|
+start
+
+:Open App;
+:Check Authentication Status?;
+if (Authenticated?) then (yes)
+  :Go to Feed;
+else (no)
+  :Show Login Screen;
+  :Enter Credentials;
+  if (Valid?) then (yes)
+    :Authenticate;
+    :Go to Feed;
+  else (no)
+    :Show Error;
+    stop
+  endif
+endif
+
+:Display Feed;
+
+partition FeedActions {
+  :Select Action;
+  if (Create Post?) then (yes)
+    :Open New Post Screen;
+    :Enter Title, Text, (Image);
+    :Submit Post;
+    :Save to Database;
+    :Return to Feed;
+  else if (Like Post?) then (yes)
+    :Tap Like;
+    :Update Like Count;
+  else if (Comment Post?) then (yes)
+    :Open Comment Input;
+    :Enter Comment;
+    :Submit Comment;
+    :Save to Database;
+  else if (Open Message?) then (yes)
+    :Navigate to Chat;
+    :Send/Receive Messages;
+    :Save Messages;
+    :Return to Feed;
+  else if (Search?) then (yes)
+    :Open Search Screen;
+    :Enter Query;
+    :Display Results;
+    :Return to Feed;
+  endif
+}
+
+:Show Notifications (Push);
+
+:User Chooses to Logout?;
+if (Logout?) then (yes)
+  :Clear Session;
+  :Go to Login Screen;
+  stop
+else (no)
+  :Continue;
+  goto FeedActions
+endif
+
+@enduml

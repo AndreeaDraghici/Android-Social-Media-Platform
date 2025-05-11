@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+skinparam usecase {
+   BackgroundColor LightBlue
+   FontSize 12
+   BorderColor Black
+   FontColor Red
+}
+actor System
+
+rectangle "System Use Cases" {
+  usecase "Retrieve Profile"       as UC4
+  usecase "Retrieve Posts"         as UC8
+  usecase "Retrieve Comments"      as UC12
+  usecase "Retrieve Likes"         as UC13
+  usecase "Retrieve Messages"      as UC21
+  usecase "Receive Notifications"  as UC23
+}
+
+System --> UC4
+System --> UC8
+System --> UC12
+System --> UC13
+System --> UC21
+System --> UC23
+@enduml

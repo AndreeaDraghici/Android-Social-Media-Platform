@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home"
-    tools:context=".service.post.fragment.HomeFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/background_nature"
+    android:padding="16dp">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="5dp"
-            android:padding="15dp"
-            android:text="@string/all_posts"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:targetApi="s" />
+        android:background="@color/material_dynamic_secondary95"
+        android:elevation="4dp"
+        android:padding="16dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postrecyclerview"
-            android:layout_width="416dp"
-            android:layout_height="669dp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/row_posts" />
 
-    </LinearLayout>
-
-</FrameLayout>
+    </FrameLayout>
+</ScrollView>

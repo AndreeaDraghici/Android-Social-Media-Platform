@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#E4E3E3"
     tools:context=".service.activity.PostLikedActivity">
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- RecyclerView for Likes List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_liked_users"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_user_like" />
+
+    <!-- Centered ProgressBar when loading -->
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+</LinearLayout>
