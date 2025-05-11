@@ -1,26 +1,30 @@
-@startuml
-package "View" {
-  [LoginActivity]
-  [FeedFragment]
+@startuml Mini_MVP_Overview
+
+skinparam componentStyle rectangle
+skinparam rectangle {
+  BackgroundColor #F9F9F9
+  BorderColor #555
 }
 
-package "Presenter" {
-  [LoginPresenter]
-  [FeedPresenter]
+
+rectangle "View" {
+  component "UI (Activity/Fragment)"
 }
 
-package "Model" {
-  [AuthRepository]
-  [PostRepository]
+rectangle "Presenter" {
+  component "Presenter Logic"
 }
 
-LoginActivity --> LoginPresenter : onLoginClicked(email, pass)
-LoginPresenter --> AuthRepository : authenticate(email, pass)
-AuthRepository --> LoginPresenter : authResult(success/fail)
-LoginPresenter --> LoginActivity : showSuccess()/showError()
+rectangle "Model" {
+  component "Business Logic"
+  database "Firebase DB"
+}
 
-FeedFragment --> FeedPresenter : loadFeed()
-FeedPresenter --> PostRepository : fetchPosts()
-PostRepository --> FeedPresenter : postsList
-FeedPresenter --> FeedFragment : displayPosts(postsList)
+
+"UI (Activity/Fragment)" --> "Presenter Logic" : UI Event
+"Presenter Logic" --> "Business Logic" : Request Data
+"Business Logic" --> "Firebase DB" : Access Data
+"Firebase DB" --> "Business Logic" : Return Data
+"Business Logic" --> "Presenter Logic" : Processed Result
+"Presenter Logic" --> "UI (Activity/Fragment)" : Update UI
 @enduml

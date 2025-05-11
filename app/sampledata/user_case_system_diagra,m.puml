@@ -1,11 +1,13 @@
-@startuml
+@startuml SystemUseCases
 left to right direction
+
 skinparam usecase {
    BackgroundColor LightBlue
    FontSize 12
    BorderColor Black
    FontColor Red
 }
+
 actor System
 
 rectangle "System Use Cases" {
@@ -14,7 +16,7 @@ rectangle "System Use Cases" {
   usecase "Retrieve Comments"      as UC12
   usecase "Retrieve Likes"         as UC13
   usecase "Retrieve Messages"      as UC21
-  usecase "Receive Notifications"  as UC23
+  usecase "Send Notifications"     as UC23
 }
 
 System --> UC4

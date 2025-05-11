@@ -1,63 +1,83 @@
-@startuml
+@startuml ActivityDiagram_SocialMediaApp
 |User|
+skinparam backgroundColor #FFFFFF
+skinparam activity {
+  BackgroundColor #F5F5F5
+  BorderColor black
+  StartColor black
+  EndColor silver
+}
+
 start
 
 :Open App;
-:Check Authentication Status?;
+:Check Authentication Status;
 if (Authenticated?) then (yes)
   :Go to Feed;
 else (no)
   :Show Login Screen;
-  :Enter Credentials;
-  if (Valid?) then (yes)
-    :Authenticate;
-    :Go to Feed;
-  else (no)
-    :Show Error;
+  if (Wants to Register?) then (yes)
+    :Enter Name, Email, Password;
+    :Register;
+    :Redirect to Feed;
     stop
+  else (no)
+    :Enter Email / Password or Google;
+    if (Valid Credentials?) then (yes)
+      :Authenticate;
+      :Go to Feed;
+    else (no)
+      :Show Error;
+      if (Wants to Create Account?) then (yes)
+        :Enter Name, Email, Password;
+        :Register;
+        :Redirect to Feed;
+        stop
+      else (no)
+        stop
+      endif
+    endif
   endif
 endif
 
 :Display Feed;
 
 partition FeedActions {
-  :Select Action;
+  :Select Feed Action;
   if (Create Post?) then (yes)
-    :Open New Post Screen;
-    :Enter Title, Text, (Image);
-    :Submit Post;
-    :Save to Database;
+    :Open Post Creator;
+    :Enter Title, Text, Select/Take Image;
+    :Submit;
+    :Save Post to Firebase;
     :Return to Feed;
   else if (Like Post?) then (yes)
     :Tap Like;
-    :Update Like Count;
+    :Update Likes in DB;
   else if (Comment Post?) then (yes)
-    :Open Comment Input;
     :Enter Comment;
     :Submit Comment;
-    :Save to Database;
+    :Save Comment to Firebase;
   else if (Open Message?) then (yes)
-    :Navigate to Chat;
-    :Send/Receive Messages;
-    :Save Messages;
-    :Return to Feed;
+    :Open Chat;
+    :Select User;
+    :Send/Receive Message;
+    :Save to Firebase;
   else if (Search?) then (yes)
-    :Open Search Screen;
-    :Enter Query;
-    :Display Results;
+    :Enter Search Query;
+    :Display Filtered Results;
     :Return to Feed;
   endif
 }
 
-:Show Notifications (Push);
+:Receive Push Notifications;
 
-:User Chooses to Logout?;
+:User Chooses Logout?;
 if (Logout?) then (yes)
-  :Clear Session;
-  :Go to Login Screen;
+  :Clear User Session;
+  :Return to Login Screen;
   stop
 else (no)
-  :Continue;
+  :Return to Feed;
   goto FeedActions
 endif
 

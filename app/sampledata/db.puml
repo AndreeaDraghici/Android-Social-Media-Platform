@@ -1,40 +1,77 @@
-@startuml
-skinparam classAttributeIconSize 0
+@startuml DatabaseStructure
+left to right direction
 
-class Post {
-  + postId: String
-  --
-  title: String
-  description: String
-  pTime: Long
-  pLikes: Integer
-  uId: String
-  uEmail: String
-  uName: String
-  image: String
+skinparam entity {
+  BackgroundColor LightYellow
+  BorderColor DarkGreen
+  FontColor DarkBlue
+  FontSize 12
 }
 
-class Comment {
-  + commentId: String
+entity "Users" as Users {
+  * uid: String
   --
-  comment: String
-  cTime: Long
-  uId: String
-  uEmail: String
-  uName: String
-}
-
-class User {
-  + userId: String
-  --
-  name: String
   email: String
+  name: String
   image: String
+  cover: String?
+  phone: String?
   onlineStatus: String
   typingTo: String
 }
 
-Post "1" -- "*" Comment : has
-User "1" -- "*" Post    : creates
-User "1" -- "*" Comment : writes
+entity "Posts" as Posts {
+  * postId: String
+  --
+  title: String
+  description: String
+  ptime: String
+  uemail: String
+  uid: String
+  uimage: String
+  pcomments: String
+  plike: String
+}
+
+entity "Comments (nested)" as Comments {
+  * cId: String
+  --
+  comment: String
+  ptime: String
+  uid: String
+}
+
+entity "Likes (nested)" as Likes {
+  * userId: String
+  --
+  liked: Boolean
+}
+
+entity "Chats" as Chats {
+  * chatId: String
+  --
+  isSeen: Boolean
+  message: String
+  receiver: String
+  sender: String
+  timestamp: String
+  type: String
+}
+
+' Relationships
+Users ||--o{ Posts : "uid"
+Posts ||--o{ Comments : "postId"
+Posts ||--o{ Likes : "postId"
+Users ||--o{ Comments : "uid"
+Users ||--o{ Likes : "userId"
+Users ||--o{ Chats : "sender/receiver"
+
+entity "Legend" as Legend {
+  "||--|| : 1 to 1, mandatory both sides"
+  "||--o{ : 1 to many, mandatory-to-optional"
+  "o{--|| : many to 1, optional-to-mandatory"
+  "o{--o{ : many to many, optional both sides"
+  "--     : simple association"
+}
+
 @enduml

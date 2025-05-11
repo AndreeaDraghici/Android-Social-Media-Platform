@@ -1,0 +1,62 @@
+@startuml Simple_MVP_Flow
+skinparam sequenceDiagram {
+  ArrowColor #4A90E2
+  ActorBorderColor #333
+  ParticipantBorderColor #555
+}
+
+actor User as User
+
+box "View Layer" #LightBlue
+  participant LoginView as "LoginActivity"
+  participant FeedView as "FeedFragment"
+  participant ChatView as "ChatActivity"
+end box
+
+box "Presenter Layer" #LightGreen
+  participant LoginPresenter
+  participant FeedPresenter
+  participant ChatPresenter
+end box
+
+box "Model Layer" #LightYellow
+  participant AuthModel as "AuthService"
+  participant PostModel as "PostService"
+  participant ChatModel as "ChatService"
+end box
+
+box "Data Layer" #LightCoral
+  participant FirebaseDB
+end box
+
+User -> LoginView : login(email, pass)
+LoginView -> LoginPresenter : onLogin()
+LoginPresenter -> AuthModel : authenticate()
+AuthModel -> FirebaseDB : query Users
+FirebaseDB --> AuthModel : user data
+AuthModel --> LoginPresenter : result
+LoginPresenter --> LoginView : showResult()
+
+User -> FeedView : viewFeed()
+FeedView -> FeedPresenter : loadPosts()
+FeedPresenter -> PostModel : fetchPosts()
+PostModel -> FirebaseDB : query Posts
+FirebaseDB --> PostModel : postsList
+PostModel --> FeedPresenter : postsList
+FeedPresenter --> FeedView : displayPosts()
+
+User -> ChatView : openChat(id)
+ChatView -> ChatPresenter : loadMessages()
+ChatPresenter -> ChatModel : fetchMessages()
+ChatModel -> FirebaseDB : query Chats
+FirebaseDB --> ChatModel : messagesList
+ChatModel --> ChatPresenter : messagesList
+ChatPresenter --> ChatView : displayMessages()
+
+ChatView -> ChatPresenter : sendMessage(msg)
+ChatPresenter -> ChatModel : postMessage()
+ChatModel -> FirebaseDB : writeMessage
+FirebaseDB --> ChatModel : ack
+ChatModel --> ChatPresenter : ack
+ChatPresenter --> ChatView : updateUI()
+@enduml

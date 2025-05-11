@@ -24,6 +24,10 @@ rectangle "User Use Cases" {
   usecase "View Likers"            as UC18
   usecase "Send Message"           as UC19
   usecase "Delete Message"         as UC20
+  usecase "View Messages"          as UC4
+  usecase "View Comments"          as UC8
+  usecase "View Likes"             as UC12
+  usecase "View Profile"           as UC13
   usecase "Search Posts"           as UC14
   usecase "Log Out"                as UC15
 }
@@ -44,4 +48,9 @@ User --> UC19
 User --> UC20
 User --> UC14
 User --> UC15
+User --> UC4
+User --> UC8
+User --> UC12
+User --> UC13
+
 @enduml

@@ -1,32 +1,35 @@
-@startuml
-package "Client-side (Android App)" {
-  rectangle "View" as V {
-    [Activities & Fragments] as AF
-    [Adapters for RecyclerView] as AR
-    [Utility Classes] as UC
-  }
+@startuml Client_Server_Architecture
+
+skinparam componentStyle rectangle
+skinparam rectangle {
+  BackgroundColor #F9F9F9
+  BorderColor #555
 }
 
-rectangle "Presenter" as P {
-  [Interaction Logic] as IL
-  [View Updaters] as VU
+
+rectangle "Client Side (Android App)" {
+  component "UI (Activity/Fragment)"
+  component "Presenter"
+  component "Business Logic"
 }
 
-package "Server-side (Firebase)" {
-  rectangle "Model" as M {
-    [Authentication] as MA
-    [Database Operations] as MDO
-    [Storage Management] as MSM
-    [Notification Services] as MNS
-  }
+cloud "Internet" as Internet
+
+rectangle "Server Side (Firebase)" {
+  database "Realtime Database"
+  component "Authentication"
+  component "Cloud Storage"
 }
 
-AF -right-> IL : User Inputs
-IL -right-> MA : Auth Requests
-IL -down-> MDO : Data Requests
-MA -left-> VU : Update View
-MDO -left-> VU : Update View
-MSM -up-> VU : Update View with Images
-MNS -right-> VU : Trigger Notifications
-VU -up-> AF : Updates UI
+"UI (Activity/Fragment)" --> "Presenter" : Sends UI Events
+"Presenter" --> "Business Logic" : Request Data
+"Business Logic" --> Internet : API Request
+Internet --> "Authentication" : Auth Request
+Internet --> "Realtime Database" : Read/Write Data
+Internet --> "Cloud Storage" : Upload/Download Files
+"Realtime Database" --> Internet : Data Response
+"Authentication" --> Internet : Auth Result
+Internet --> "Business Logic" : Response
+"Business Logic" --> "Presenter" : Processed Result
+"Presenter" --> "UI (Activity/Fragment)" : Update UI
 @enduml
