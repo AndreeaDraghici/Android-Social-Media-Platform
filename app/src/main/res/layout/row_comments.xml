@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/commenter_avatar"
+    <!-- Commenter avatar -->
+    <ImageView
+        android:id="@+id/ivCommenterAvatar"
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_image"
-        android:layout_marginEnd="8dp"/>
+        android:layout_marginEnd="8dp" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -19,28 +24,31 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <!-- Commenter name -->
         <TextView
-            android:id="@+id/commenter_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvCommenterName"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User Name"
+            android:text="Username"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
 
+        <!-- Comment text -->
         <TextView
             android:id="@+id/comment_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="This is a comment..."
-            android:textSize="14sp"/>
-    </LinearLayout>
+            android:text="Sample comment"
+            android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/comment_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="12:34"
-        android:textSize="12sp"
-        android:textColor="#888"
-        android:layout_marginStart="8dp"/>
+        <!-- Comment time -->
+        <TextView
+            android:id="@+id/comment_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Just now"
+            android:textSize="12sp"
+            android:textColor="#666" />
+    </LinearLayout>
 </LinearLayout>
