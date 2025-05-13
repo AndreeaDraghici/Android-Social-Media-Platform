@@ -37,6 +37,11 @@ public class ModelUsers {
     String uid;
 
     /**
+     * The cover image URL of the user.
+     */
+    String cover;
+
+    /**
      * Default constructor.
      * Initializes an empty instance of the ModelUsers class.
      */
@@ -47,6 +52,7 @@ public class ModelUsers {
         this.typingTo = "";
         this.uid = "";
         this.image = "";
+        this.cover = "";
     }
 
     /**
@@ -58,14 +64,34 @@ public class ModelUsers {
      * @param email        The email of the user.
      * @param image        The profile image of the user.
      * @param uid          The unique identifier (UID) of the user.
+     * @param cover        The cover image URL of the user.
      */
-    public ModelUsers(String name, String onlineStatus, String typingTo, String email, String image, String uid) {
+    public ModelUsers(String name, String onlineStatus, String typingTo, String email, String image, String uid, String cover) {
         this.name = name;
         this.onlineStatus = onlineStatus;
         this.typingTo = typingTo;
         this.email = email;
         this.image = image;
         this.uid = uid;
+        this.cover = cover;
+    }
+
+    /**
+     * Gets the cover image URL of the user.
+     *
+     * @return The cover image URL.
+     */
+    public String getCover() {
+        return cover;
+    }
+
+    /**
+     * Sets the cover image URL of the user.
+     *
+     * @param cover The cover image URL to set.
+     */
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
     /**

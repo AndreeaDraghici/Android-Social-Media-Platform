@@ -1,105 +1,109 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_nature"
-    >
+    tools:context=".service.post.fragment.EditProfileFragment">
 
     <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <FrameLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edittext_background"
-            android:padding="24dp"
-            android:elevation="4dp">
+            android:layout_margin="20dp"
+            android:radius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@android:color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center_horizontal">
+                android:padding="24dp">
 
+                <!-- Avatar + buton overlay -->
                 <FrameLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/photo_picker_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:clickable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless">
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="16dp">
 
-                    <!-- Dashed circle border behind -->
-                    <View
-                        android:layout_width="132dp"
-                        android:layout_height="132dp"
-                        android:background="@drawable/dashed_circle"
-                        android:layout_gravity="center" />
-
-                    <!-- Actual profile image -->
                     <ImageView
                         android:id="@+id/edit_profile_image"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_image"
-                        android:shape="oval"
-                        android:background="@drawable/circle_white_bg"
-                        android:padding="4dp" />
+                        android:background="@drawable/ic_image"
+                        android:src="@drawable/ic_image" />
 
-                    <!-- Camera icon overlay -->
                     <ImageButton
                         android:id="@+id/btn_change_photo"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_gravity="bottom|end"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/circle_accent_bg"
+                        android:layout_margin="4dp"
+                        android:backgroundTint="@color/colorAccent"
                         android:src="@drawable/ic_add"
-                        android:contentDescription="Change Profile Photo"
+                        android:contentDescription="Change image"
                         app:tint="@android:color/white" />
                 </FrameLayout>
 
-
-
-                <!-- Name Input -->
-                <EditText
-                    android:id="@+id/edit_name"
+                <!-- Nume -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edittext_background"
-                    android:drawableStart="@drawable/ic_username"
-                    android:drawablePadding="8dp"
-                    android:hint="Enter your name"
-                    android:inputType="textPersonName"
-                    android:padding="12dp"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="@color/neutral"
-                    android:layout_marginBottom="24dp"/>
+                    android:layout_marginBottom="12dp"
+                    android:hint="Name">
 
-                <!-- Save Button -->
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Email -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:hint="Email Address">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Resetare parolă -->
+                <Button
+                    android:id="@+id/reset_password_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Send email to password reset"
+                    android:backgroundTint="@color/colorAccent"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Salvare -->
                 <Button
                     android:id="@+id/save_button"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Save Changes"
-                    android:textAllCaps="false"
-                    android:textStyle="bold"
-                    android:backgroundTint="@color/colorAccent"
+                    android:layout_height="wrap_content"
+                    android:text="Confirm changes"
+                    android:backgroundTint="@android:color/holo_green_dark"
                     android:textColor="@android:color/white"
-                    app:cornerRadius="12dp"/>
-
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
-        </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

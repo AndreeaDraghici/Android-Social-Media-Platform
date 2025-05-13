@@ -274,7 +274,8 @@ public class AddPostFragment extends Fragment {
         }
 
         /** Create a notification manager object.**/
-        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getActivity()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
 
         /** Notification channels are only available in version of Android.
          So, add a check on SDK version. **/

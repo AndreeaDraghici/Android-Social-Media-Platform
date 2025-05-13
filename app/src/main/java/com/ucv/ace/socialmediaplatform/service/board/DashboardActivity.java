@@ -57,7 +57,7 @@ public class DashboardActivity extends AppCompatActivity {
             switch (menuItem.getItemId()) {
 
                 case R.id.nav_home:
-                    actionBar.setTitle("Home");
+                    actionBar.setTitle("Home Feed");
                     HomeFragment fragment = new HomeFragment();
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.content, fragment, "");

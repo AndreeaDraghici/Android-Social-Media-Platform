@@ -1,0 +1,60 @@
+@startuml FirebaseRealtimeDatabase
+
+
+package "Firebase Realtime Database" {
+
+    package "Users" {
+        class User {
+            +uid: String
+            +name: String
+            +email: String
+            +image: URL
+            +onlineStatus: String
+            +typingTo: String
+        }
+    }
+
+    package "Posts" {
+        class Post {
+            +title: String
+            +description: String
+            +ptime: Timestamp
+            +uid: String
+            +uemail: String
+            +uimage: URL
+            +plike: Int
+            +pcomments: Int
+        }
+
+        class Comments {
+            +cId: String
+            +comment: String
+            +ptime: Timestamp
+            +uid: String
+        }
+
+        class Likes {
+            +uid: Boolean
+        }
+
+        Post --> Comments : conține
+        Post --> Likes : conține
+    }
+
+    package "Chats" {
+        class Message {
+            +message: String
+            +sender: String
+            +receiver: String
+            +timestamp: Timestamp
+            +isSeen: Boolean
+            +type: text/image
+        }
+    }
+
+    FirebaseRealtimeDatabase --> Users
+    FirebaseRealtimeDatabase --> Posts
+    FirebaseRealtimeDatabase --> Chats
+}
+
+@enduml

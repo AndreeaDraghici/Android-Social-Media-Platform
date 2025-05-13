@@ -30,10 +30,16 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ucv.ace.socialmediaplatform.R;
 import com.ucv.ace.socialmediaplatform.service.board.DashboardActivity;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -147,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Google Sign-In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account.getIdToken());
+                firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign-In failed
                 Log.w("LoginActivity", "Google sign in failed", e);
@@ -161,42 +167,58 @@ public class LoginActivity extends AppCompatActivity {
      *
      * @param idToken The ID token returned from Google Sign-In.
      */
-    private void firebaseAuthWithGoogle(String idToken) {
-        loadingBar.setMessage("Logging In with Google Account...");
-        loadingBar.show();
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+    private void firebaseAuthWithGoogle(GoogleSignInAccount idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken.getIdToken(), null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
-            loadingBar.dismiss();
             if (task.isSuccessful()) {
-                FirebaseUser user = mAuth.getCurrentUser();
-                String email = user.getEmail();
-                String uid = user.getUid();
-                String name = user.getDisplayName();
-                String image = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "";
+                FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
-                HashMap<String, Object> userData = new HashMap<>();
-                userData.put("email", email);
-                userData.put("uid", uid);
-                userData.put("name", name != null ? name : "");
-                userData.put("image", image);
-                userData.put("phone", "");
-                userData.put("onlineStatus", "online");
-                userData.put("typingTo", "noOne");
-                userData.put("cover", "");
+                if (firebaseUser == null) return;
+
+                String uid = firebaseUser.getUid();
+                String email = firebaseUser.getEmail();
+                String name = firebaseUser.getDisplayName();
+                String image = String.valueOf(firebaseUser.getPhotoUrl());
 
                 DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
-                userRef.setValue(userData);
 
-                Toast.makeText(LoginActivity.this, "Google sign-in success!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
-                finish();
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        HashMap<String, Object> userData = new HashMap<>();
+                        userData.put("email", email);
+                        userData.put("uid", uid);
+                        userData.put("name", name != null ? name : "");
+                        userData.put("image", image);
+                        userData.put("phone", "");
+                        userData.put("onlineStatus", "online");
+                        userData.put("typingTo", "noOne");
+
+                        if (!snapshot.exists()) {
+                            // First login → add cover as empty
+                            userData.put("cover", "");
+                            userRef.setValue(userData);
+                        } else {
+                            // Don't override existing "cover"
+                            userRef.updateChildren(userData);
+                        }
+
+                        // Launch main activity after successful DB update
+                        startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(LoginActivity.this, "Firebase error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             } else {
-                Toast.makeText(LoginActivity.this, "Firebase Authentication failed.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     /**
      * Checks for saved login credentials in SharedPreferences and

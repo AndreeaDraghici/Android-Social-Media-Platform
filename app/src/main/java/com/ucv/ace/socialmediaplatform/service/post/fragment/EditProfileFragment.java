@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +24,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ucv.ace.socialmediaplatform.R;
@@ -35,14 +42,17 @@ import java.util.HashMap;
 public class EditProfileFragment extends Fragment {
     private static final int REQUEST_GALLERY = 1001;
 
-    private FrameLayout pickerContainer;
-    private ImageView editProfileImage;
-    private ImageButton btnChangePhoto;
-    private EditText editName;
-    private Button saveButton;
+    private FrameLayout photoPickerContainer;
+    private ImageView profileImageView;
+    private ImageButton changePhotoBtn;
+    private TextInputEditText nameEdit, emailEdit;
+    private Button saveBtn, resetPasswordBtn;
     private ProgressDialog progressDialog;
 
     private Uri selectedImageUri;
+    private String originalName = "";
+    private String originalEmail = "";
+
     private FirebaseUser firebaseUser;
     private DatabaseReference userRef;
     private StorageReference storageRef;
@@ -59,121 +69,161 @@ public class EditProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // bind views
-        pickerContainer   = view.findViewById(R.id.photo_picker_container);
-        editProfileImage  = view.findViewById(R.id.edit_profile_image);
-        btnChangePhoto    = view.findViewById(R.id.btn_change_photo);
-        editName          = view.findViewById(R.id.edit_name);
-        saveButton        = view.findViewById(R.id.save_button);
-        progressDialog    = new ProgressDialog(requireContext());
+
+        photoPickerContainer = view.findViewById(R.id.photo_picker_container);
+        profileImageView     = view.findViewById(R.id.edit_profile_image);
+        changePhotoBtn       = view.findViewById(R.id.btn_change_photo);
+        nameEdit             = view.findViewById(R.id.edit_name);
+        emailEdit            = view.findViewById(R.id.edit_email);
+        saveBtn              = view.findViewById(R.id.save_button);
+        resetPasswordBtn     = view.findViewById(R.id.reset_password_button);
+
+        progressDialog = new ProgressDialog(requireContext());
         progressDialog.setCancelable(false);
 
-        // firebase setup
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        userRef      = FirebaseDatabase.getInstance()
-                .getReference("Users")
-                .child(firebaseUser.getUid());
-        storageRef   = FirebaseStorage.getInstance()
-                .getReference("ProfileImages");
+        userRef      = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        storageRef   = FirebaseStorage.getInstance().getReference("ProfileImages");
 
-        // load current user data
-        userRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
-                if (!snapshot.exists()) return;
-                String name = snapshot.child("name").getValue(String.class);
+        // Load current user data
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                originalName = snapshot.child("name").getValue(String.class);
+                originalEmail = firebaseUser.getEmail();
+
+                nameEdit.setText(originalName);
+                emailEdit.setText(originalEmail);
+
                 String image = snapshot.child("image").getValue(String.class);
-                if (name != null) editName.setText(name);
                 if (image != null) {
-                    Glide.with(requireContext())
-                            .load(image)
-                            .placeholder(R.drawable.ic_image)
-                            .circleCrop()
-                            .into(editProfileImage);
+                    Glide.with(requireContext()).load(image).circleCrop().into(profileImageView);
                 }
             }
-            @Override
-            public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
 
-        // click to pick image
+        // Enable save button only when something changes
+        TextWatcher watcher = new SimpleTextWatcher(() -> {
+            boolean nameChanged = !TextUtils.isEmpty(nameEdit.getText()) &&
+                    !nameEdit.getText().toString().equals(originalName);
+            boolean emailChanged = !TextUtils.isEmpty(emailEdit.getText()) &&
+                    !emailEdit.getText().toString().equals(originalEmail);
+            saveBtn.setEnabled(nameChanged || emailChanged || selectedImageUri != null);
+        });
+
+        nameEdit.addTextChangedListener(watcher);
+        emailEdit.addTextChangedListener(watcher);
+
         View.OnClickListener launchPicker = v -> {
             Intent pick = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pick, REQUEST_GALLERY);
         };
-        pickerContainer.setOnClickListener(launchPicker);
-        editProfileImage.setOnClickListener(launchPicker);
-        btnChangePhoto.setOnClickListener(launchPicker);
 
-        // save changes
-        saveButton.setOnClickListener(v -> updateProfile());
+        photoPickerContainer.setOnClickListener(launchPicker);
+        profileImageView.setOnClickListener(launchPicker);
+        changePhotoBtn.setOnClickListener(launchPicker);
+
+        saveBtn.setOnClickListener(v -> updateProfile());
+        resetPasswordBtn.setOnClickListener(v -> sendResetPasswordEmail());
+    }
+
+    private void sendResetPasswordEmail() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Reset Password")
+                .setMessage("We'll send a password reset email to your account. Continue?")
+                .setPositiveButton("Send", (dialog, which) ->
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(firebaseUser.getEmail())
+                                .addOnSuccessListener(unused ->
+                                        Toast.makeText(getContext(), "Reset email sent", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()))
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     @Override
-    public void onActivityResult(int requestCode,
-                                 int resultCode,
-                                 @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_GALLERY
-                && resultCode == Activity.RESULT_OK
-                && data != null
-                && data.getData() != null) {
+        if (requestCode == REQUEST_GALLERY && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData();
-            Glide.with(this)
-                    .load(selectedImageUri)
-                    .placeholder(R.drawable.ic_image)
-                    .circleCrop()
-                    .into(editProfileImage);
+            Glide.with(this).load(selectedImageUri).circleCrop().into(profileImageView);
+            saveBtn.setEnabled(true);
         }
     }
 
     private void updateProfile() {
-        String name = editName.getText().toString().trim();
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(requireContext(), "Enter name", Toast.LENGTH_SHORT).show();
-            return;
+        String name = nameEdit.getText().toString().trim();
+        String email = emailEdit.getText().toString().trim();
+
+        HashMap<String, Object> updates = new HashMap<>();
+        boolean changed = false;
+
+        if (!TextUtils.isEmpty(name) && !name.equals(originalName)) {
+            updates.put("name", name);
+            changed = true;
         }
+
         progressDialog.setMessage("Saving...");
         progressDialog.show();
 
-        HashMap<String, Object> updates = new HashMap<>();
-        updates.put("name", name);
-
         if (selectedImageUri != null) {
-            // upload image
             StorageReference imgRef = storageRef.child(firebaseUser.getUid() + ".jpg");
+            boolean finalChanged = changed;
             imgRef.putFile(selectedImageUri)
                     .addOnSuccessListener(taskSnapshot ->
                             imgRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 updates.put("image", uri.toString());
-                                userRef.updateChildren(updates)
-                                        .addOnCompleteListener(task -> {
-                                            progressDialog.dismiss();
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show();
-                                                requireActivity().getSupportFragmentManager().popBackStack();
-                                            } else {
-                                                Toast.makeText(requireContext(), "Update failed", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            })
-                    )
+                                finalizeUpdate(updates, email, finalChanged || true); // include image change
+                            }))
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show();
                     });
         } else {
-            // only name
-            userRef.updateChildren(updates)
-                    .addOnCompleteListener(task -> {
-                        progressDialog.dismiss();
-                        if (task.isSuccessful()) {
-                            Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show();
-                            requireActivity().getSupportFragmentManager().popBackStack();
-                        } else {
-                            Toast.makeText(requireContext(), "Update failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            finalizeUpdate(updates, email, changed);
         }
+    }
+
+    private void finalizeUpdate(HashMap<String, Object> updates, String email, boolean changed) {
+        if (!changed && email.equals(originalEmail)) {
+            progressDialog.dismiss();
+            Toast.makeText(getContext(), "No changes detected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        userRef.updateChildren(updates).addOnCompleteListener(task -> {
+            if (!email.equals(originalEmail)) {
+                firebaseUser.updateEmail(email)
+                        .addOnSuccessListener(unused -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Updated successfully", Toast.LENGTH_SHORT).show();
+                            requireActivity().getSupportFragmentManager().popBackStack();
+                        })
+                        .addOnFailureListener(e -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Email update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+            } else {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Updated successfully", Toast.LENGTH_SHORT).show();
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+    }
+
+    // SimpleTextWatcher class to reduce boilerplate
+    private static class SimpleTextWatcher implements TextWatcher {
+        private final Runnable onTextChanged;
+
+        public SimpleTextWatcher(Runnable onTextChanged) {
+            this.onTextChanged = onTextChanged;
+        }
+
+        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            onTextChanged.run();
+        }
+        @Override public void afterTextChanged(Editable s) {}
     }
 }
