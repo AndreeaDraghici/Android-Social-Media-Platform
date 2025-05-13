@@ -3,16 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/background_nature"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/material_dynamic_secondary95"
     android:padding="16dp">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/material_dynamic_secondary95"
-        android:elevation="4dp"
-        android:padding="16dp">
-
+        android:background="@color/material_dynamic_secondary95">
 
         <androidx.recyclerview.widget.RecyclerView
             xmlns:android="http://schemas.android.com/apk/res/android"

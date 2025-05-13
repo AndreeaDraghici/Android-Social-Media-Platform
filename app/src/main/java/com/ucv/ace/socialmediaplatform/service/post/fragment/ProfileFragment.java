@@ -1,4 +1,3 @@
-// ProfileFragment.java
 package com.ucv.ace.socialmediaplatform.service.post.fragment;
 
 import android.app.Activity;
@@ -137,14 +136,17 @@ public class ProfileFragment extends Fragment {
                 if (user == null) return;
 
                 nameTv.setText(user.getName());
-                Glide.with(requireContext())
-                        .load(user.getImage())
-                        .placeholder(R.drawable.ic_image)
-                        .circleCrop()
-                        .into(avatarIv);
+                Context context = getContext();
+                if (context != null) {
+                    Glide.with(context)
+                            .load(user.getImage())
+                            .placeholder(R.drawable.ic_image)
+                            .circleCrop()
+                            .into(avatarIv);
+                }
 
                 String coverUrl = user.getCover();
-                if (coverUrl != null && !coverUrl.isEmpty()) {
+                if (coverUrl != null && !coverUrl.isEmpty() && context != null) {
                     Glide.with(requireContext())
                             .load(coverUrl)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -157,9 +159,12 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                if (isAdded()) {
-                    Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+
+                Context context = getContext();
+                if (context != null) {
+                    Toast.makeText(context, "Couldn't load friends", Toast.LENGTH_SHORT).show();
                 }
+
 
             }
         });

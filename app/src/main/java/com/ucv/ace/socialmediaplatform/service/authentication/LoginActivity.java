@@ -297,31 +297,43 @@ public class LoginActivity extends AppCompatActivity {
      */
     @SuppressLint("SetTextI18n")
     private void showRecoverPasswordDialog() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Creează dialog cu stil custom
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
         builder.setTitle("Recover Your Password");
 
-        // Set up a layout for entering the recovery email
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+        // Setup layout principal
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 30, 40, 10);
+        layout.setBackgroundResource(R.drawable.dialog_background);
 
-        final EditText mailTextField = new EditText(this);//write your registered email
-        mailTextField.setHint("Add Your Email");
-        mailTextField.setBackgroundColor(getResources().getColor(android.R.color.white));
-        mailTextField.setMinEms(20);
-        mailTextField.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        // Email input
+        EditText emailInput = new EditText(this);
+        emailInput.setHint("Add your email");
+        emailInput.setHintTextColor(getResources().getColor(R.color.neutral));
+        emailInput.setTextColor(getResources().getColor(R.color.colorBlack));
+        emailInput.setBackgroundResource(R.drawable.edittext_background);
+        emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        emailInput.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_email, 0, 0, 0);
+        emailInput.setCompoundDrawablePadding(24);
+        emailInput.setPadding(40, 30, 40, 30);
 
-        linearLayout.addView(mailTextField);
-        linearLayout.setPadding(15, 15, 25, 15);
-        builder.setView(linearLayout);
+        layout.addView(emailInput);
+        builder.setView(layout);
 
-        // Set dialog buttons for recovering the password or canceling
-        builder.setPositiveButton("Recover password", (dialog, which) -> {
-            String mail = mailTextField.getText().toString().trim();
-            beginRecovery(mail);//send a mail message on the mail to recover the password
-        });
+        // Butoane
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        builder.setPositiveButton("Recover Password", (dialog, which) -> {
+            String email = emailInput.getText().toString().trim();
+            beginRecovery(email);
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Stil butoane
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorAccent));
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorgray01));
     }
 
 
