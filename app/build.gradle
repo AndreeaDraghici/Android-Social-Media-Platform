@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace 'com.ucv.ace.socialmediaplatform'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.ucv.ace.socialmediaplatform"
-        minSdk 24
-        targetSdk 33
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -53,6 +53,10 @@ dependencies {
 
     // dependency for Google connection
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+    // dependency for Google Maps
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.google.android.material:material:1.10.0'
 
     // Add the dependency for the Firebase SDK for Google Analytics
     // When using the BoM, don't specify versions in Firebase dependencies

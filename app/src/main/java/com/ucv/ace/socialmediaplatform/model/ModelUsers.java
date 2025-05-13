@@ -42,6 +42,17 @@ public class ModelUsers {
     String cover;
 
     /**
+     * The date of birth of the user.
+     */
+    private String about;
+
+    /**
+     * The date of birth of the user.
+     */
+    private String website;
+
+
+    /**
      * Default constructor.
      * Initializes an empty instance of the ModelUsers class.
      */
@@ -53,6 +64,8 @@ public class ModelUsers {
         this.uid = "";
         this.image = "";
         this.cover = "";
+        this.about = "";
+        this.website = "";
     }
 
     /**
@@ -66,7 +79,7 @@ public class ModelUsers {
      * @param uid          The unique identifier (UID) of the user.
      * @param cover        The cover image URL of the user.
      */
-    public ModelUsers(String name, String onlineStatus, String typingTo, String email, String image, String uid, String cover) {
+    public ModelUsers(String name, String onlineStatus, String typingTo, String email, String image, String uid, String cover, String about, String website) {
         this.name = name;
         this.onlineStatus = onlineStatus;
         this.typingTo = typingTo;
@@ -74,6 +87,9 @@ public class ModelUsers {
         this.image = image;
         this.uid = uid;
         this.cover = cover;
+        this.about = about;
+        this.website = website;
+
     }
 
     /**
@@ -182,5 +198,29 @@ public class ModelUsers {
      */
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getOnlineStatus() {
+        return onlineStatus;
+    }
+
+    public void setOnlineStatus(String onlineStatus) {
+        this.onlineStatus = onlineStatus;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 }
