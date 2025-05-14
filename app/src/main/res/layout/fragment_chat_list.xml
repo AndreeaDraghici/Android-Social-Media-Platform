@@ -27,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name"
+            android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="18sp" />
     </LinearLayout>
@@ -37,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:textColor="@color/black"
         android:padding="8dp"
         android:scrollbars="vertical" />
 
@@ -54,7 +56,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_more"
+            android:src="@android:drawable/ic_menu_gallery"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Upload"
             app:tint="@android:color/black" />
@@ -65,6 +67,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:hint="Type a message"
+            android:textColor="@color/black"
             android:inputType="textMultiLine"
             android:background="@drawable/edittext_background"
             android:padding="12dp"
@@ -75,7 +78,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
-            android:src="@drawable/ic_chat"
+            android:src="@android:drawable/ic_menu_send"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Send"
             app:tint="@android:color/black" />

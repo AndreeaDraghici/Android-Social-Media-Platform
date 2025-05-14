@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -103,6 +105,12 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         loadingBar = new ProgressDialog(this);
+
+        // Set up Google Sign-In button
+        Drawable googleIcon = getResources().getDrawable(R.drawable.ic_google_logo, null);
+        googleLoginButton.setCompoundDrawablesWithIntrinsicBounds(googleIcon, null, null, null);
+        googleLoginButton.setCompoundDrawablePadding(16); // Padding between icon and text
+        googleLoginButton.setGravity(Gravity.CENTER_VERTICAL);
 
         // Google Sign-In configuration
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

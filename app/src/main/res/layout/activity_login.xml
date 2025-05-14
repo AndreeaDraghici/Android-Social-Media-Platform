@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/material_dynamic_secondary95"
+    android:background="@drawable/material_dynamic_secondary95"
     tools:context=".service.authentication.LoginActivity">
 
     <ScrollView
@@ -145,16 +145,21 @@
 
                 <Button
                     android:id="@+id/google_login_button"
-                    android:layout_width="254dp"
-                    android:layout_height="50dp"
+                    android:layout_width="263dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/divider_line"
                     android:layout_centerInParent="true"
-                    android:backgroundTint="@color/btnRed"
-                    android:drawableLeft="@drawable/ic_gmail_logo"
-                    android:drawablePadding="8dp"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:drawableStart="@drawable/ic_google_logo"
+                    android:drawablePadding="16dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingStart="32dp"
                     android:text="@string/login_with_google"
                     android:textColor="@android:color/white"
+                    android:textStyle="bold"
                     app:cornerRadius="16dp" />
+
 
 
                 <!-- Register New Account TextView -->

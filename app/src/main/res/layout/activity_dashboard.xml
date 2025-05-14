@@ -21,7 +21,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/design_default_color_secondary"
+        android:background="#0A527E"
+        app:itemIconTint="@color/colorWhite"
+        app:itemRippleColor="@color/colorWhite"
+        app:itemTextColor="@color/colorWhite"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_nav">
 

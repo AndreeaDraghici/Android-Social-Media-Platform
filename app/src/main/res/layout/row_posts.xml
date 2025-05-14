@@ -66,8 +66,8 @@
                 android:layout_height="32dp"
                 android:padding="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_more"
-                app:tint="@color/colorGreen" />
+                android:src="@android:drawable/ic_menu_share"
+                app:tint="@color/black" />
         </LinearLayout>
 
         <!-- Title -->
