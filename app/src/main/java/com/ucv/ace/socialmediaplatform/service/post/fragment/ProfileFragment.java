@@ -83,13 +83,14 @@ public class ProfileFragment extends Fragment {
                         .commit()
         );
 
-        viewFriendsBtn.setOnClickListener(v ->
-                requireActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.content, new UsersFragment())
-                        .addToBackStack(null)
-                        .commit()
-        );
+        viewFriendsBtn.setOnClickListener(v -> {
+            FriendsFragment friendsFragment = new FriendsFragment();
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content, friendsFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         TabLayout tabLayout = view.findViewById(R.id.profileTabLayout);
         ViewPager2 viewPager = view.findViewById(R.id.profileViewPager);
