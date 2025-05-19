@@ -14,7 +14,7 @@
         android:id="@+id/recyclerUsers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        android:padding="2dp"
         android:scrollbars="vertical"
         tools:listitem="@layout/row_users" />
 </LinearLayout>

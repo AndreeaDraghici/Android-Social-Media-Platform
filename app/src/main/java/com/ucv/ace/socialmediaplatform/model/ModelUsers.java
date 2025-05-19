@@ -51,6 +51,20 @@ public class ModelUsers {
      */
     private String website;
 
+    /**
+     * The education of the user.
+     */
+    private String education;
+    /**
+     * The city of the user.
+     */
+    private String city;
+
+    /**
+     * The work of the user.
+     */
+    private String work;
+
 
     /**
      * Default constructor.
@@ -66,6 +80,9 @@ public class ModelUsers {
         this.cover = "";
         this.about = "";
         this.website = "";
+        this.education = "";
+        this.city = "";
+        this.work = "";
     }
 
     /**
@@ -79,7 +96,9 @@ public class ModelUsers {
      * @param uid          The unique identifier (UID) of the user.
      * @param cover        The cover image URL of the user.
      */
-    public ModelUsers(String name, String onlineStatus, String typingTo, String email, String image, String uid, String cover, String about, String website) {
+    public ModelUsers(String name, String onlineStatus, String typingTo, String email,
+                      String image, String uid, String cover, String about,
+                      String website, String education, String city, String work) {
         this.name = name;
         this.onlineStatus = onlineStatus;
         this.typingTo = typingTo;
@@ -89,6 +108,9 @@ public class ModelUsers {
         this.cover = cover;
         this.about = about;
         this.website = website;
+        this.education = education;
+        this.city = city;
+        this.work = work;
 
     }
 
@@ -222,5 +244,61 @@ public class ModelUsers {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    /**
+     * Gets the education of the user.
+     *
+     * @return The education of the user.
+     */
+    public String getEducation() {
+        return education;
+    }
+
+    /**
+     * Sets the education of the user.
+     *
+     * @param education The education to set for the user.
+     */
+    public void setEducation(String education) {
+        this.education = education;
+    }
+
+    /**
+     * Gets the city of the user.
+     *
+     * @return The city of the user.
+     */
+
+    public String getCity() {
+        return city;
+    }
+
+
+    /**
+     * Sets the city of the user.
+     *
+     * @param city The city to set for the user.
+     */
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    /**
+     * Gets the work of the user.
+     *
+     * @return The work of the user.
+     */
+    public String getWork() {
+        return work;
+    }
+
+    /**
+     * Sets the work of the user.
+     *
+     * @param work The work to set for the user.
+     */
+    public void setWork(String work) {
+        this.work = work;
     }
 }

@@ -4,6 +4,7 @@ package com.ucv.ace.socialmediaplatform.service.activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -69,6 +70,9 @@ public class ViewUserProfileActivity extends AppCompatActivity {
 
         loadUserData(userId);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Friend Profile");
+
         ViewUserPagerAdapter adapter = new ViewUserPagerAdapter(this, userId);
         viewPager.setAdapter(adapter);
 
@@ -79,6 +83,15 @@ public class ViewUserProfileActivity extends AppCompatActivity {
                 tab.setText("About");
             }
         }).attach();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadUserData(String userId) {
@@ -160,173 +173,173 @@ public class ViewUserProfileActivity extends AppCompatActivity {
         });
     }
 
-/***
- * ViewUserPagerAdapter class is a FragmentStateAdapter that manages the fragments for the ViewPager.
- * It creates two fragments: ViewUserPostsFragment and ViewUserAboutFragment.
- */
-public class ViewUserPagerAdapter extends FragmentStateAdapter {
+    /***
+     * ViewUserPagerAdapter class is a FragmentStateAdapter that manages the fragments for the ViewPager.
+     * It creates two fragments: ViewUserPostsFragment and ViewUserAboutFragment.
+     */
+    public class ViewUserPagerAdapter extends FragmentStateAdapter {
 
-    private final String userId;
+        private final String userId;
 
-    public ViewUserPagerAdapter(@NonNull FragmentActivity fragmentActivity, String userId) {
-        super(fragmentActivity);
-        this.userId = userId;
-    }
+        public ViewUserPagerAdapter(@NonNull FragmentActivity fragmentActivity, String userId) {
+            super(fragmentActivity);
+            this.userId = userId;
+        }
 
-    @NonNull
-    @Override
-    public Fragment createFragment(int position) {
-        if (position == 0) {
-            return ViewUserPostsFragment.newInstance(userId);
-        } else {
-            return ViewUserAboutFragment.newInstance(userId);
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            if (position == 0) {
+                return ViewUserPostsFragment.newInstance(userId);
+            } else {
+                return ViewUserAboutFragment.newInstance(userId);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return 2;
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return 2;
-    }
-}
 
+    /**
+     * ViewUserPostsFragment class displays the user's posts in a RecyclerView.
+     * It retrieves the posts from the Firebase database based on the userId
+     * and updates the RecyclerView with the posts.
+     */
 
-/**
- * ViewUserPostsFragment class displays the user's posts in a RecyclerView.
- * It retrieves the posts from the Firebase database based on the userId
- * and updates the RecyclerView with the posts.
- */
+    public static class ViewUserPostsFragment extends Fragment {
 
-public static class ViewUserPostsFragment extends Fragment {
+        private static final String ARG_UID = "uid";
+        private String uid;
+        private RecyclerView recyclerView;
+        private AdapterPosts adapterPosts;
+        private List<ModelPost> postList;
 
-    private static final String ARG_UID = "uid";
-    private String uid;
-    private RecyclerView recyclerView;
-    private AdapterPosts adapterPosts;
-    private List<ModelPost> postList;
+        public static ViewUserPostsFragment newInstance(String uid) {
+            ViewUserPostsFragment fragment = new ViewUserPostsFragment();
+            Bundle args = new Bundle();
+            args.putString(ARG_UID, uid);
+            fragment.setArguments(args);
+            return fragment;
+        }
 
-    public static ViewUserPostsFragment newInstance(String uid) {
-        ViewUserPostsFragment fragment = new ViewUserPostsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_UID, uid);
-        fragment.setArguments(args);
-        return fragment;
-    }
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) uid = getArguments().getString(ARG_UID);
+        }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) uid = getArguments().getString(ARG_UID);
-    }
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater,
+                                 ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
+            recyclerView = view.findViewById(R.id.recycler_posts);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
-        recyclerView = view.findViewById(R.id.recycler_posts);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            postList = new ArrayList<>();
+            adapterPosts = new AdapterPosts(getContext(), postList);
+            recyclerView.setAdapter(adapterPosts);
 
-        postList = new ArrayList<>();
-        adapterPosts = new AdapterPosts(getContext(), postList);
-        recyclerView.setAdapter(adapterPosts);
+            loadUserPosts();
 
-        loadUserPosts();
+            return view;
+        }
 
-        return view;
-    }
-
-    private void loadUserPosts() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
-        ref.orderByChild("uid").equalTo(uid)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        postList.clear();
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            ModelPost post = ds.getValue(ModelPost.class);
-                            if (post != null) {
-                                post.setPid(ds.getKey());
-                                postList.add(post);
+        private void loadUserPosts() {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
+            ref.orderByChild("uid").equalTo(uid)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            postList.clear();
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                ModelPost post = ds.getValue(ModelPost.class);
+                                if (post != null) {
+                                    post.setPid(ds.getKey());
+                                    postList.add(post);
+                                }
                             }
+                            adapterPosts.notifyDataSetChanged();
                         }
-                        adapterPosts.notifyDataSetChanged();
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
-                });
-    }
-}
-
-/**
- * ViewUserAboutFragment class displays the user's about information in a RecyclerView.
- * It retrieves the user's about information from the Firebase database
- * and updates the RecyclerView with the about items.
- * It uses a custom adapter to display the about items.
- * This fragment is used to show the user's bio and website.
- */
-public static class ViewUserAboutFragment extends Fragment {
-
-    private static final String ARG_UID = "uid";
-    private String uid;
-    private RecyclerView recyclerView;
-    private ProfileFragment.AboutAdapter aboutAdapter;
-    private List<ProfileFragment.AboutItem> aboutItems;
-
-    public static ViewUserAboutFragment newInstance(String uid) {
-        ViewUserAboutFragment fragment = new ViewUserAboutFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_UID, uid);
-        fragment.setArguments(args);
-        return fragment;
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
+        }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) uid = getArguments().getString(ARG_UID);
-    }
+    /**
+     * ViewUserAboutFragment class displays the user's about information in a RecyclerView.
+     * It retrieves the user's about information from the Firebase database
+     * and updates the RecyclerView with the about items.
+     * It uses a custom adapter to display the about items.
+     * This fragment is used to show the user's bio and website.
+     */
+    public static class ViewUserAboutFragment extends Fragment {
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_about_list, container, false);
+        private static final String ARG_UID = "uid";
+        private String uid;
+        private RecyclerView recyclerView;
+        private ProfileFragment.AboutAdapter aboutAdapter;
+        private List<ProfileFragment.AboutItem> aboutItems;
 
-        recyclerView = view.findViewById(R.id.recycler_about);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        aboutItems = new ArrayList<>();
-        aboutAdapter = new ProfileFragment.AboutAdapter(aboutItems);
-        recyclerView.setAdapter(aboutAdapter);
+        public static ViewUserAboutFragment newInstance(String uid) {
+            ViewUserAboutFragment fragment = new ViewUserAboutFragment();
+            Bundle args = new Bundle();
+            args.putString(ARG_UID, uid);
+            fragment.setArguments(args);
+            return fragment;
+        }
 
-        loadAboutData();
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) uid = getArguments().getString(ARG_UID);
+        }
 
-        return view;
-    }
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater,
+                                 ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_about_list, container, false);
 
-    private void loadAboutData() {
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ModelUsers user = snapshot.getValue(ModelUsers.class);
-                aboutItems.clear();
-                if (user != null) {
-                    if (user.getAbout() != null && !user.getAbout().isEmpty()) {
-                        aboutItems.add(new ProfileFragment.AboutItem(R.drawable.ic_image, "Bio", user.getAbout()));
+            recyclerView = view.findViewById(R.id.recycler_about);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            aboutItems = new ArrayList<>();
+            aboutAdapter = new ProfileFragment.AboutAdapter(aboutItems);
+            recyclerView.setAdapter(aboutAdapter);
+
+            loadAboutData();
+
+            return view;
+        }
+
+        private void loadAboutData() {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ModelUsers user = snapshot.getValue(ModelUsers.class);
+                    aboutItems.clear();
+                    if (user != null) {
+                        if (user.getAbout() != null && !user.getAbout().isEmpty()) {
+                            aboutItems.add(new ProfileFragment.AboutItem(R.drawable.ic_image, "Bio", user.getAbout()));
+                        }
+                        if (user.getWebsite() != null && !user.getWebsite().isEmpty()) {
+                            aboutItems.add(new ProfileFragment.AboutItem(R.drawable.ic_add, "Website", user.getWebsite()));
+                        }
+                        aboutAdapter.notifyDataSetChanged();
                     }
-                    if (user.getWebsite() != null && !user.getWebsite().isEmpty()) {
-                        aboutItems.add(new ProfileFragment.AboutItem(R.drawable.ic_add, "Website", user.getWebsite()));
-                    }
-                    aboutAdapter.notifyDataSetChanged();
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
     }
-}
 }
