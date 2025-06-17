@@ -1,0 +1,13 @@
+@startuml Chat_Send_Flow
+participant ChatActivity
+participant ChatPresenter
+participant ChatService
+participant FirebaseDB
+
+ChatActivity -> ChatPresenter : sendMessage(msg)
+ChatPresenter -> ChatService : postMessage()
+ChatService -> FirebaseDB : writeMessage
+FirebaseDB --> ChatService : ack
+ChatService --> ChatPresenter : ack
+ChatPresenter --> ChatActivity : updateUI()
+@enduml

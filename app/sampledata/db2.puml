@@ -1,60 +1,79 @@
-@startuml FirebaseRealtimeDatabase
+@startuml
 
+' ======================
+'       Entități
+' ======================
 
-package "Firebase Realtime Database" {
-
-    package "Users" {
-        class User {
-            +uid: String
-            +name: String
-            +email: String
-            +image: URL
-            +onlineStatus: String
-            +typingTo: String
-        }
-    }
-
-    package "Posts" {
-        class Post {
-            +title: String
-            +description: String
-            +ptime: Timestamp
-            +uid: String
-            +uemail: String
-            +uimage: URL
-            +plike: Int
-            +pcomments: Int
-        }
-
-        class Comments {
-            +cId: String
-            +comment: String
-            +ptime: Timestamp
-            +uid: String
-        }
-
-        class Likes {
-            +uid: Boolean
-        }
-
-        Post --> Comments : conține
-        Post --> Likes : conține
-    }
-
-    package "Chats" {
-        class Message {
-            +message: String
-            +sender: String
-            +receiver: String
-            +timestamp: Timestamp
-            +isSeen: Boolean
-            +type: text/image
-        }
-    }
-
-    FirebaseRealtimeDatabase --> Users
-    FirebaseRealtimeDatabase --> Posts
-    FirebaseRealtimeDatabase --> Chats
+entity "Users" as U {
+  * uid : String <<PK>>
+  --
+  name : String
+  email : String
+  image : String
+  cover : String
+  onlineStatus : String
+  typingTo : String
+  phone : String
+  about : String
+  website : String
 }
+
+entity "Chats" as C {
+  * chatId : String <<PK>>
+  --
+  sender : String <<FK -> Users.uid>>
+  receiver : String <<FK -> Users.uid>>
+  message : String
+  type : String
+  timestamp : String
+  isSeen : Boolean
+}
+
+entity "Posts" as P {
+  * postId : String <<PK>>
+  --
+  uid : String <<FK -> Users.uid>>
+  title : String
+  description : String
+  uemail : String
+  uimage : String
+  ptime : String
+  plike : String
+  pcomments : String
+}
+
+entity "Comments" as CM {
+  * cId : String <<PK>>
+  --
+  uid : String <<FK -> Users.uid>>
+  comment : String
+  ptime : String
+  postId : String <<FK -> Posts.postId>>
+}
+
+entity "Likes" as L {
+  * uid : String <<FK -> Users.uid>>
+  postId : String <<FK -> Posts.postId>>
+}
+
+' ======================
+'        Relații
+' ======================
+
+U ||--o{ C : trimite/primește
+U ||--o{ P : creează
+U ||--o{ CM : scrie
+U ||--o{ L : apreciază
+P ||--o{ CM : are comentarii
+P ||--o{ L : are like-uri
+
+' ======================
+'        Legendă
+' ======================
+
+note right of U
+<<PK>>  = Primary Key
+<<FK>>  = Foreign Key
+end note
 
 @enduml

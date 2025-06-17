@@ -11,18 +11,22 @@ box "View Layer" #LightBlue
   participant LoginView as "LoginActivity"
   participant FeedView as "FeedFragment"
   participant ChatView as "ChatActivity"
+  participant ProfileView as "UserProfilePageActivity"
+  participant FriendProfileView as "ViewUserProfileActivity"
 end box
 
 box "Presenter Layer" #LightGreen
   participant LoginPresenter
   participant FeedPresenter
   participant ChatPresenter
+  participant ProfilePresenter
 end box
 
 box "Model Layer" #LightYellow
   participant AuthModel as "AuthService"
   participant PostModel as "PostService"
   participant ChatModel as "ChatService"
+  participant UserModel as "UserService"
 end box
 
 box "Data Layer" #LightCoral
@@ -59,4 +63,28 @@ ChatModel -> FirebaseDB : writeMessage
 FirebaseDB --> ChatModel : ack
 ChatModel --> ChatPresenter : ack
 ChatPresenter --> ChatView : updateUI()
+
+User -> ProfileView : openProfile()
+ProfileView -> ProfilePresenter : loadUserData()
+ProfilePresenter -> UserModel : getUserInfo()
+UserModel -> FirebaseDB : query User Info
+FirebaseDB --> UserModel : user details
+UserModel --> ProfilePresenter : user details
+ProfilePresenter --> ProfileView : displayProfile()
+
+ProfileView -> ProfilePresenter : loadFriendsList()
+ProfilePresenter -> UserModel : getFriendsList()
+UserModel -> FirebaseDB : query Friends
+FirebaseDB --> UserModel : friendsList
+UserModel --> ProfilePresenter : friendsList
+ProfilePresenter --> ProfileView : showFriends()
+
+User -> ProfileView : selectFriend(friendId)
+ProfileView -> FriendProfileView : navigateToFriend(friendId)
+FriendProfileView -> UserModel : getFriendProfile(friendId)
+UserModel -> FirebaseDB : query Friend Info
+FirebaseDB --> UserModel : friend details
+UserModel --> FriendProfileView : friend details
+FriendProfileView -> User : displayFriendProfile()
+
 @enduml

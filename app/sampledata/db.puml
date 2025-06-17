@@ -1,77 +1,60 @@
-@startuml DatabaseStructure
-left to right direction
+@startuml
+title Firebase Realtime Database - Structură ierarhică
 
-skinparam entity {
-  BackgroundColor LightYellow
-  BorderColor DarkGreen
-  FontColor DarkBlue
-  FontSize 12
-}
+package "Firebase Realtime DataBase" {
+  package "Users" {
+    class uid {
+      + name : String
+      + email : String
+      + image : String
+      + cover : String
+      + onlineStatus : String
+      + typingTo : String
+      + phone : String
+      + about : String
+      + website : String
+    }
+  }
 
-entity "Users" as Users {
-  * uid: String
-  --
-  email: String
-  name: String
-  image: String
-  cover: String?
-  phone: String?
-  onlineStatus: String
-  typingTo: String
-}
+  package "Chats" {
+    class chatId {
+      + sender : String
+      + receiver : String
+      + message : String
+      + type : String
+      + timestamp : String
+      + isSeen : Boolean
+    }
+  }
 
-entity "Posts" as Posts {
-  * postId: String
-  --
-  title: String
-  description: String
-  ptime: String
-  uemail: String
-  uid: String
-  uimage: String
-  pcomments: String
-  plike: String
-}
+  package "Posts" {
+    class postId {
+      + uid : String
+      + title : String
+      + description : String
+      + uemail : String
+      + uimage : String
+      + ptime : String
+      + plike : String
+      + pcomments : String
+    }
 
-entity "Comments (nested)" as Comments {
-  * cId: String
-  --
-  comment: String
-  ptime: String
-  uid: String
-}
+    package "Likes" {
+      class uid_like {
+        + uid : String
+        + liked : true
+      }
+    }
 
-entity "Likes (nested)" as Likes {
-  * userId: String
-  --
-  liked: Boolean
-}
-
-entity "Chats" as Chats {
-  * chatId: String
-  --
-  isSeen: Boolean
-  message: String
-  receiver: String
-  sender: String
-  timestamp: String
-  type: String
-}
-
-' Relationships
-Users ||--o{ Posts : "uid"
-Posts ||--o{ Comments : "postId"
-Posts ||--o{ Likes : "postId"
-Users ||--o{ Comments : "uid"
-Users ||--o{ Likes : "userId"
-Users ||--o{ Chats : "sender/receiver"
-
-entity "Legend" as Legend {
-  "||--|| : 1 to 1, mandatory both sides"
-  "||--o{ : 1 to many, mandatory-to-optional"
-  "o{--|| : many to 1, optional-to-mandatory"
-  "o{--o{ : many to many, optional both sides"
-  "--     : simple association"
+    package "Comments" {
+      class commentId {
+        + cId : String
+        + uid : String
+        + comment : String
+        + ptime : String
+      }
+    }
+  }
 }
 
 @enduml

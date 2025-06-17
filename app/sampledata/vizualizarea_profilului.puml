@@ -1,0 +1,22 @@
+@startuml Profile_Flow
+actor User
+participant UserProfilePageActivity
+participant ProfilePresenter
+participant UserService
+participant FirebaseDB
+
+User -> UserProfilePageActivity : openProfile()
+UserProfilePageActivity -> ProfilePresenter : loadUserData()
+ProfilePresenter -> UserService : getUserInfo()
+UserService -> FirebaseDB : query User Info
+FirebaseDB --> UserService : user details
+UserService --> ProfilePresenter : user details
+ProfilePresenter --> UserProfilePageActivity : displayProfile()
+
+UserProfilePageActivity -> ProfilePresenter : loadFriendsList()
+ProfilePresenter -> UserService : getFriendsList()
+UserService -> FirebaseDB : query Friends
+FirebaseDB --> UserService : friendsList
+UserService --> ProfilePresenter : friendsList
+ProfilePresenter --> UserProfilePageActivity : showFriends()
+@enduml

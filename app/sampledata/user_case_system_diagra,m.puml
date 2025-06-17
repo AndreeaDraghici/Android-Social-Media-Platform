@@ -1,28 +1,26 @@
-@startuml SystemUseCases
+@startuml
 left to right direction
-
 skinparam usecase {
-   BackgroundColor LightBlue
-   FontSize 12
-   BorderColor Black
-   FontColor Red
+  BackgroundColor #E0F7FA
+  BorderColor Black
+  ArrowColor Black
 }
 
 actor System
 
-rectangle "System Use Cases" {
-  usecase "Retrieve Profile"       as UC4
-  usecase "Retrieve Posts"         as UC8
-  usecase "Retrieve Comments"      as UC12
-  usecase "Retrieve Likes"         as UC13
-  usecase "Retrieve Messages"      as UC21
-  usecase "Send Notifications"     as UC23
+package "System Use Cases" {
+  usecase "Retrieve Profile" as SYS1
+  usecase "Retrieve Posts" as SYS2
+  usecase "Retrieve Comments" as SYS3
+  usecase "Retrieve Likes" as SYS4
+  usecase "Retrieve Messages" as SYS5
+  usecase "Send Notifications" as SYS6
 }
 
-System --> UC4
-System --> UC8
-System --> UC12
-System --> UC13
-System --> UC21
-System --> UC23
+System --> SYS1
+System --> SYS2
+System --> SYS3
+System --> SYS4
+System --> SYS5
+System --> SYS6
 @enduml

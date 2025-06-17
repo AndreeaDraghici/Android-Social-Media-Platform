@@ -1,0 +1,21 @@
+@startuml Login_Flow
+skinparam sequenceDiagram {
+  ArrowColor #4A90E2
+  ActorBorderColor #333
+  ParticipantBorderColor #555
+}
+
+actor User
+participant LoginActivity
+participant LoginPresenter
+participant AuthService
+participant FirebaseDB
+
+User -> LoginActivity : login(email, pass)
+LoginActivity -> LoginPresenter : onLogin()
+LoginPresenter -> AuthService : authenticate()
+AuthService -> FirebaseDB : query Users
+FirebaseDB --> AuthService : user data
+AuthService --> LoginPresenter : result
+LoginPresenter --> LoginActivity : showResult()
+@enduml

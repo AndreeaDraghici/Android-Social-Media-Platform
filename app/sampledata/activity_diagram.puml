@@ -66,6 +66,14 @@ partition FeedActions {
     :Enter Search Query;
     :Display Filtered Results;
     :Return to Feed;
+  else if (Open Profile?) then (yes)
+    :View Own Profile;
+    :Edit Profile Info;
+    :View Friends List;
+    :Select Friend from List;
+    :Open Friend Profile;
+    :Return to Profile;
+    :Return to Feed;
   endif
 }
 

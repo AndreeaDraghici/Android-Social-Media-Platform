@@ -21,23 +21,23 @@
             android:layout_height="wrap_content"
             android:hint="Website" />
 
-        <EditText
-            android:id="@+id/education_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Education" />
+<!--        <EditText-->
+<!--            android:id="@+id/education_input"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="Education" />-->
 
-        <EditText
-            android:id="@+id/study_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Field of Study" />
+<!--        <EditText-->
+<!--            android:id="@+id/study_input"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="Field of Study" />-->
 
-        <EditText
-            android:id="@+id/city_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="City" />
+<!--        <EditText-->
+<!--            android:id="@+id/city_input"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="City" />-->
 
         <Button
             android:id="@+id/save_button"

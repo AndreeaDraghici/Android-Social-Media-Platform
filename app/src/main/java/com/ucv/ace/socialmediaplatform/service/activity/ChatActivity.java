@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -440,7 +441,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void requestCameraPermission() {
-        requestPermissions(cameraPermission, CAMERA_REQUEST);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(cameraPermission, CAMERA_REQUEST);
+        }
     }
 
     private void pickFromCamera() {
@@ -465,7 +468,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void requestStoragePermission() {
-        requestPermissions(storagePermission, STORAGE_REQUEST);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(storagePermission, STORAGE_REQUEST);
+        }
     }
 
     private void sendmessage(final String message) {

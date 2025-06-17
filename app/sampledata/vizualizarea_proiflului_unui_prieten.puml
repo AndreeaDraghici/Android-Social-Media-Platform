@@ -1,0 +1,15 @@
+@startuml Friend_Profile_Flow
+actor User
+participant UserProfilePageActivity
+participant ViewUserProfileActivity
+participant UserService
+participant FirebaseDB
+
+User -> UserProfilePageActivity : selectFriend(friendId)
+UserProfilePageActivity -> ViewUserProfileActivity : navigateToFriend(friendId)
+ViewUserProfileActivity -> UserService : getFriendProfile(friendId)
+UserService -> FirebaseDB : query Friend Info
+FirebaseDB --> UserService : friend details
+UserService --> ViewUserProfileActivity : friend details
+ViewUserProfileActivity -> User : displayFriendProfile()
+@enduml

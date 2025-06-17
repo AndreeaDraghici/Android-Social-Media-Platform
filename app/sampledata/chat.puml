@@ -1,0 +1,15 @@
+@startuml Chat_Load_Flow
+actor User
+participant ChatActivity
+participant ChatPresenter
+participant ChatService
+participant FirebaseDB
+
+User -> ChatActivity : openChat(id)
+ChatActivity -> ChatPresenter : loadMessages()
+ChatPresenter -> ChatService : fetchMessages()
+ChatService -> FirebaseDB : query Chats
+FirebaseDB --> ChatService : messagesList
+ChatService --> ChatPresenter : messagesList
+ChatPresenter --> ChatActivity : displayMessages()
+@enduml

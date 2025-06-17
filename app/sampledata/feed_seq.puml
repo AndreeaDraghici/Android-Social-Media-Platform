@@ -1,0 +1,15 @@
+@startuml Feed_Flow
+actor User
+participant FeedFragment
+participant FeedPresenter
+participant PostService
+participant FirebaseDB
+
+User -> FeedFragment : viewFeed()
+FeedFragment -> FeedPresenter : loadPosts()
+FeedPresenter -> PostService : fetchPosts()
+PostService -> FirebaseDB : query Posts
+FirebaseDB --> PostService : postsList
+PostService --> FeedPresenter : postsList
+FeedPresenter --> FeedFragment : displayPosts()
+@enduml
