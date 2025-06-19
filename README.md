@@ -172,18 +172,3 @@ com.ucv.ace.socialmediaplatform/
 - **`Utils.java`**: Utility class for helper functions used across the app.
 
 ---
-
-## 📝 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
----
-
-## 📬 Contact
-
-Have questions, feedback, or feature suggestions?
-
-- Open an issue [here](https://github.com/AndreeaDraghici/Android-Social-Media-Platform/issues)
-- Or reach out via GitHub profile
-
----
